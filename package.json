@@ -1,0 +1,29 @@
+{
+  "name": "ipfs-cloud",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:flowpoint/ipfs-cloud.git",
+  "author": "flowpoint <flowpoint@protonmail.com!>",
+  "license": "GPL-v3",
+  "scripts": {
+    "install-elm-deps": "pushd src/elm && elm-package install -y elm-lang/svg  & elm-package install -y gdotdesign/elm-ui && elm-package install -y pablohirafuji/elm-qrcode; popd;",
+    "pack": "webpack",
+    "serve": "http-server -c-1 -p 12345 build",
+    "start": "npm run pack && npm run serve"
+  },
+  "devDependencies": {
+    "elm": "^0.18.0",
+    "elm-webpack-loader": "^4.3.1",
+    "file-loader": "^1.1.4",
+    "web-components-loader": "^0.1.2",
+    "webpack-css-loaders": "^1.0.0",
+    "http-server": "^0.10.0",
+    "webpack": "^3.6.0"
+  },
+  "dependencies": {
+    "stream-buffers": "^3.0.1",
+    "ipfs": "^0.26.0",
+    "ipfs-pubsub-room": "^0.3.0",
+    "crypto-js": "^3.1.9-1"
+  }
+}
