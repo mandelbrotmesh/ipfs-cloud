@@ -10,8 +10,8 @@ const $body = document.querySelector('body')
 var cryptojs = require('crypto-js')
 
 //var webcomponents = require('src/web-components/')
-
 require('../index.html')
+
 
 var Elm = require('../elm/main.elm')
 var mountNode = document.getElementById('main')
@@ -357,7 +357,7 @@ const startApplication = () => {
 
 }
 
-startApplication()
+//startApplication()
 
 var acpsw = " 1"
 

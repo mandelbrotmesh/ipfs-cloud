@@ -21,9 +21,13 @@ module.exports = {
                 loader:  'file-loader?name=[name].[ext]',
             },
       	    {
-      		      test: /web-components\//,
-      		      loader: 'web-components-loader'
-      	    }
+      		test: /web-components\//,
+      		loader: 'web-components-loader',
+      	    },
+	    {
+		test: /css\//,
+		loader: 'webpack-css-loaders',
+	    }
 
         ]
     }
