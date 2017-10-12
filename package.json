@@ -17,8 +17,7 @@
     "file-loader": "^1.1.4",
     "http-server": "^0.10.0",
     "web-components-loader": "^0.1.2",
-    "webpack": "^3.6.0",
-    "webpack-css-loaders": "^1.0.0"
+    "webpack": "^3.6.0"
   },
   "dependencies": {
     "crypto-js": "^3.1.9-1",

@@ -1,0 +1,21 @@
+menu {
+  background-color: purple;
+  width: 100vw;
+  height: 10vh;
+}
+
+menu-button {
+  width: 10vh;
+  height: 10vh;
+  position: absolute;
+  font-size: 10vh;
+}
+
+menu-input {
+  width: calc(100vw - 21vh);
+  position: absolute;
+  left: 1vh;
+  right: 20vh;
+  top: 1vh;
+  bottom: 91vh;
+}

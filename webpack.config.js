@@ -26,7 +26,7 @@ module.exports = {
       	    },
 	    {
 		test: /css\//,
-		loader: 'webpack-css-loaders',
+		loader: 'css-loader',
 	    }
 
         ]
