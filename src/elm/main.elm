@@ -7,6 +7,7 @@ import Html exposing (Html, text)
 import Color exposing (..)
 import Style exposing (..)
 import Style.Color as Color
+import Layout exposing (..)
 
 import Element exposing (..)
 import Element.Attributes exposing (..)
@@ -25,7 +26,6 @@ port acc_submit : String -> Cmd msg
 type alias Model =
   { acc_psw : String
   , drawer_isopen : Bool
-  , acc_menu_isopen : Bool
   }
 
 model : Model
@@ -33,7 +33,6 @@ model =
   {
     acc_psw = "blub"
   , drawer_isopen = False
-  , acc_menu_isopen = False
   }
 
 
@@ -44,8 +43,6 @@ model =
 type Msg
   = Acc_submit_msg String
   | Use_drawer Bool
-  | Use_acc_menu Bool
-  | Msgs String
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -54,48 +51,26 @@ update msg model =
       ( model, acc_submit model.acc_psw )
     Use_drawer msg ->
       ({model | drawer_isopen = True}, Cmd.none)
-    Use_acc_menu msg ->
-      ({model | acc_menu_isopen = True}, Cmd.none)
-    Msgs msg ->
-      ({ model | acc_psw = msg}, Cmd.none)
 
 
 --view
 
 
-qrCodeView : String -> Html msg
-qrCodeView message =
-    QRCode.encode message
-        |> Result.map QRCode.toSvg
-        |> Result.withDefault
-            (Html.text "Error while encoding to QRCode.")
+-- qrCodeView : String -> Html msg
+-- qrCodeView message =
+--     QRCode.encode message
+--         |> Result.map QRCode.toSvg
+--         |> Result.withDefault
+--             (Html.text "Error while encoding to QRCode.")
 
 -- type Styles
 --   = None
 --   | Menu
-
-type Appshell_identifiers
-  = None
-  | Menustyle
-  | Drawerstyle
-  | Mainstyle
-
-appshellstyle : StyleSheet Appshell_identifiers variation
-appshellstyle =
-  Style.styleSheet
-    [ Style.style None []
-    , Style.style Menustyle
-        [ Color.background Color.blue
-
-        ]
-    , Style.style Drawerstyle
-        [ Color.background Color.yellow
-        ]
-    , Style.style Mainstyle
-        [ Color.background Color.grey
-        ]
-    ]
 --
+
+
+--
+-- --
 --
 -- Menu =
 --   row None
@@ -113,12 +88,46 @@ appshellstyle =
 --
 
 
-menu : Element Appshell_identifiers variation Msg
+-- menu : Element Appshell_identifiers variation Msg
+-- menu =
+--   row None []
+--     [
+--
+--
+--     ]
+
+      -- ]     --None [] appshellstyle
+    --, Element.text "menu2"]
+
+type Styles
+  = None
+  | Menustyle
+  | Drawerstyle
+  | Mainviewstyle
+
+
+stylesheet =
+  Style.styleSheet
+    [ Style.style None []
+    , Style.style Menustyle
+        [ Color.background blue ]
+    , Style.style Drawerstyle
+        [ Color.background blue ]
+    , Style.style Mainviewstyle
+        [ Color.background yellow ]
+    ]
+
+menu : Element Styles variation Msg
 menu =
-  row None []
-    [ Input.text None
+  row None [ padding 20, width (fill), height (fill)]
+    [ el Mainviewstyle [ alignRight ] empty
+    , Element.image Mainviewstyle [ alignRight, height fill ]
+      { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg"
+      , caption = "open_drawer"
+      }
+    , Input.text None
         []
-        { onChange = Msgs
+        { onChange = Acc_submit_msg
         , value = "shit"
         , label =
             Input.placeholder
@@ -127,23 +136,54 @@ menu =
                 }
         , options = []
         }
+        , Element.image Mainviewstyle [ alignRight, height fill ]
+          { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
+          , caption = "search"
+          }
+        , Element.image Mainviewstyle [ alignRight, height fill ]
+          { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/content/svg/production/ic_add_48px.svg"
+          , caption = "upload"
+          }
+        , Element.image Mainviewstyle [ alignRight, height fill ]
+          { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"
+          , caption = "account_options"
+          }
+
     ]
 
-      -- ]     --None [] appshellstyle
-    --, Element.text "menu2"]
+drawer : Element Styles variation msg
+drawer =
+  row None []
+    [ Element.text "drawer"
+    , Element.text "drawer"
+    ]
 
-appshell : Element Appshell_identifiers variation Msg
-appshell =
-  column None []
-    [ el Menustyle [] ( menu )
-    , el Mainstyle [] ( Element.text "main")]
+mainview : Element Styles variation msg
+mainview =
+  row None []
+    [ Element.text "main"
+    , Element.text "main"
+    ]
 
+appshell menu drawer mainview =
+  column None
+    [ width (fill)
+    , height (fill)
+    ]
+    [ el Menustyle
+        [ width (fill)
+        , height (fill) ]
+        (menu)
+    , el Mainviewstyle
+        [ width (fill)
+        , height (fillPortion 9) ]
+        ( mainview )
+    ]
 
 view: Model -> Html Msg
 view model =
-  Element.layout appshellstyle <|
-    appshell
-  -- layout (menu, (div [] []), (div [] []))
+  Element.viewport stylesheet <|
+    appshell menu menu mainview
 
 
 main : Program Never Model Msg

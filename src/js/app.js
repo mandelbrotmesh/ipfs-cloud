@@ -2,22 +2,15 @@
 /* global self */
 
 const $dragoverPopup = document.querySelector('.dragover-popup')
-
 const $body = document.querySelector('body')
 
-//const connectPeer = ""
+// var cryptojs = require('crypto-js')
 
-var cryptojs = require('crypto-js')
-
-//var webcomponents = require('src/web-components/')
 require('../index.html')
-
 
 var Elm = require('../elm/main.elm')
 var mountNode = document.getElementById('main')
 var app = Elm.Main.embed(mountNode)
-
-
 
 const streamBuffers = require('stream-buffers')
 const Ipfs = require('ipfs')
@@ -26,73 +19,69 @@ const Room = require('ipfs-pubsub-room')
 let node
 let peerInfo
 
-// var account = {"devices": [
-//   {"device1name": { "key": "key",
-//                     "peerId": "peerId",
-//                     "repohash": "repohash",
-//                     "repokey": "repokey"},
+// var account =
+//   {'time': 0,
+//    'devices': {}
+//   }
 //
-//   {"device1name": { "key": "key",
-//                     "peerId": "peerId",
-//                     "repohash": "repohash",
-//                     "repokey": "repokey"},
-//   "last_edit": "edit time"
+//
+// //!!! send all via pubkey cryptography
+//
+// //use ipns for pinlist
+// function add_dev (peerId, dev_name) {
+//   if( dev_name in account['devices'] )
+//     { console.log('device already exists')
+//       return -1}
+//
+//   account['time'] = Date.now()
+//   account['devices'][dev_name] = peerId
+//   // account['devices']['device_name'] = dev_name
+//
+//   //send encrypted account file to peerId
+//   //prompt password on peer -> decrypt account file
+//   //return new account file(encrypted)
+//
+// }
+// function update_acc (update, sender) {
+//   if (update['time'] > account['time'])
+//     account = update
+//
 // }
 
-
-//!!! send all via pubkey cryptography
-function newacc () {
-  //prompt elm devicname, password, ->make key from password
-  // generate repo and save peer id
-  //save repo-files
-}
-
-function add_dev (peerId) {
-  //send encrypted account file to peerId
-  //prompt password on peer -> decrypt account file
-  //return new account file(encrypted)
-
-}
-function update_acc () {
-  //sends update to all devices
-}
-
-
-/*
- * Start and stop the IPFS node
- */
 
 function start () {
   if (!node) {
     console.log('node starts');
     updateView('starting', node)
 
-
-
-    node = new Ipfs({repo: 'ipfs-' + Math.random(),
+    node = new Ipfs({repo: 'ipfs-' + 0.6732527245947162, //Math.random(),
+                    init: true,
                     EXPERIMENTAL: {
                       pubsub: true
-                    }})
+                    }
+                    // config: {
+                    //   Addresses: {
+                    //     Swarm: [
+                    //       'ip4/127.0.0.1/tcp/1337'
+                    //     ],
+                    //     Bootstrap: {
+                    //       'ip4/192.178.168.29/tcp...'
+                    //     }
+                    //
+                    //    }
+                    //  }
+                  })
 
     node.on('start', () => {
       node.id().then((id) => {
         peerInfo = id
         updateView('ready', node)
-        setInterval(refreshPeerList, 1000)
+        // const room = Room(node, "ipfs-cloud")
+        // setInterval(refreshPeerList, 1000)
       })
     })
   }
 }
-
-function stop () {
-  console.log('node stops');
-  window.location.href = window.location.href // refresh page
-
-}
-
-/*
- * Fetch files and display them to the user
- */
 
 function createFileBlob (data, multihash) {
   const file = new window.Blob(data, {type: 'application/octet-binary'})
@@ -131,17 +120,13 @@ function getFile (multihash) {
         const buf = []
         // buffer up all the data in the file
         file.content.on('data', (data) => buf.push(data))
-
         file.content.once('end', () => {
           const listItem = createFileBlob(buf, multihash)
-
         })
-
         file.content.resume()
       }
     })
     filesStream.resume()
-
     filesStream.on('end', () => console.log('Every file was fetched for', multihash))
   })
 }
@@ -153,6 +138,10 @@ function onDrop (event) {
   onDragExit()
   event.preventDefault()
   console.log('ondrop')
+  upload(event)
+}
+
+function upload (event){
   if (!node) {
     onError('IPFS must be started before files can be added')
     return
@@ -243,6 +232,13 @@ function onDrop (event) {
         if (files && files.length) {
           var a = files[0].hash
           console.log('added ' + a)
+
+          // node.pubsub.publish("ipfs-cloud", new Buffer('added' + a), (err) => {
+          //   if (err){
+          //     throw err
+          //     }
+          //   })
+
         }
       })
       .catch(onError)
@@ -250,15 +246,9 @@ function onDrop (event) {
 
 }
 
-/*
- * Network related functions
- */
-
-//Get peers from IPFS and display them
-
-function connectToPeer (targetPeer) {
+function add_dev (peer_id) {
   //event.target.disabled = true
-  node.swarm.connect(targetPeer, (err) => {
+  node.swarm.connect(peer_id, (err) => {
     if (err) {
       return onError(err)
     }
@@ -267,35 +257,32 @@ function connectToPeer (targetPeer) {
     //   event.target.disabled = false
     // }, 500)
   })
+  // node.pubsub.subscribe("ipfs-cloud", (msg) => console.log(msg.from, msg.toString()))
 }
 
-function refreshPeerList () {
-  node.swarm.peers((err, peers) => {
-    if (err) {
-      return onError(err)
-    }
-    const peersAsHtml = peers
-      .map((peer) => {
-        if (peer.addr) {
-          const addr = peer.addr.toString()
-          if (addr.indexOf('ipfs') >= 0) {
-            return addr
-          } else {
-            return addr + peer.peer.id.toB58String()
-          }
-        }
-      })
-      .map((addr) => {
-        return '<li>' + addr + '</li>'
-      }).join('')
-
-
-  })
-}
-
-/*
- * UI functions
- */
+// function refreshPeerList () {
+//   node.swarm.peers((err, peers) => {
+//     if (err) {
+//       return onError(err)
+//     }
+//     const peersAsHtml = peers
+//       .map((peer) => {
+//         if (peer.addr) {
+//           const addr = peer.addr.toString()
+//           if (addr.indexOf('ipfs') >= 0) {
+//             return addr
+//           } else {
+//             return addr + peer.peer.id.toB58String()
+//           }
+//         }
+//       })
+//       .map((addr) => {
+//         return '<li>' + addr + '</li>'
+//       }).join('')
+//
+//
+//   })
+// }
 
 function onError (err) {
   let msg = 'An error occured, check the dev console'
@@ -318,9 +305,6 @@ function onDragExit () {
   //$dragoverPopup.style.display = 'none'
 }
 
-/*
- * App states
- */
 const states = {
   ready: () => {
     const addressesHtml = peerInfo.addresses.map((address) => {
@@ -357,14 +341,11 @@ const startApplication = () => {
 
 }
 
-//startApplication()
-
-var acpsw = " 1"
+startApplication()
 
 app.ports.acc_submit.subscribe(
   function myfunction(acc_psw) {
-    var acpsw = " 1"
-    acpsw = acc_psw
+    var acpsw = acc_psw
     console.log(acpsw)
   }
 )
