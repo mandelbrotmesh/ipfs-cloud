@@ -7,12 +7,14 @@ import Html exposing (Html, text)
 import Color exposing (..)
 import Style exposing (..)
 import Style.Color as Color
+import Style.Border as Border
 import Layout exposing (..)
 
 import Element exposing (..)
 import Element.Attributes exposing (..)
 import Element.Input as Input
 import Element.Input exposing (search, text, disabled)
+import Style.Font exposing (size)
 
 import String
 import QRCode
@@ -63,47 +65,12 @@ update msg model =
 --         |> Result.withDefault
 --             (Html.text "Error while encoding to QRCode.")
 
--- type Styles
---   = None
---   | Menu
---
-
-
---
--- --
---
--- Menu =
---   row None
---     [ ]
---     [ el Drawer [] (Element.text "he")]
---
---     row None
---       []
---       [ el Menu
---           [ Element.Attributes.width (fill)
---           , Element.Attributes.height (fill)
---           ]
---           ( Element.text "hello")
---       ]
---
-
-
--- menu : Element Appshell_identifiers variation Msg
--- menu =
---   row None []
---     [
---
---
---     ]
-
-      -- ]     --None [] appshellstyle
-    --, Element.text "menu2"]
-
 type Styles
   = None
   | Menustyle
   | Drawerstyle
   | Mainviewstyle
+  | Searchbar
 
 
 stylesheet =
@@ -111,45 +78,30 @@ stylesheet =
     [ Style.style None []
     , Style.style Menustyle
         [ Color.background blue ]
+    , Style.style Searchbar
+        [ Color.background white, Border.rounded 10, size 30]
     , Style.style Drawerstyle
-        [ Color.background blue ]
+        [ Color.background red ]
     , Style.style Mainviewstyle
-        [ Color.background yellow ]
+        [ Color.background white ]
     ]
 
-menu : Element Styles variation Msg
-menu =
-  row None [ padding 20, width (fill), height (fill)]
-    [ el Mainviewstyle [ alignRight ] empty
-    , Element.image Mainviewstyle [ alignRight, height fill ]
-      { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg"
-      , caption = "open_drawer"
-      }
-    , Input.text None
-        []
-        { onChange = Acc_submit_msg
-        , value = "shit"
-        , label =
-            Input.placeholder
-                { label = Input.labelLeft (el None [ verticalCenter ] (Element.text "Yup"))
-                , text = "Placeholder!"
-                }
-        , options = []
-        }
-        , Element.image Mainviewstyle [ alignRight, height fill ]
-          { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
-          , caption = "search"
-          }
-        , Element.image Mainviewstyle [ alignRight, height fill ]
-          { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/content/svg/production/ic_add_48px.svg"
-          , caption = "upload"
-          }
-        , Element.image Mainviewstyle [ alignRight, height fill ]
-          { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"
-          , caption = "account_options"
-          }
 
-    ]
+--
+-- menu : Element Styles variation Msg
+-- menu =
+--   row None [ spacing 20, width (fillPortion 4), height (fill), verticalCenter, spread]
+--     [ el None [ width (fillPortion 4), height fill, minWidth (px 100)]
+--         (
+--
+--         )
+--         -- , Element.image Mainviewstyle [ alignRight, height fill ]
+--         --   { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/content/svg/production/ic_add_48px.svg"
+--         --   , caption = "upload"
+--         --   }
+--
+--
+--     ]
 
 drawer : Element Styles variation msg
 drawer =
@@ -165,7 +117,8 @@ mainview =
     , Element.text "main"
     ]
 
-appshell menu drawer mainview =
+appshell : Element Styles variation Msg
+appshell =
   column None
     [ width (fill)
     , height (fill)
@@ -173,17 +126,42 @@ appshell menu drawer mainview =
     [ el Menustyle
         [ width (fill)
         , height (fill) ]
-        (menu)
+        ( row None [ width fill, height fill, spacing 20, padding 10]
+            [ Element.image None [ height fill, width fill]
+                { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg"
+                , caption = "open_drawer"
+                }
+            , Input.text Searchbar
+                [ width fill, height fill]
+                { onChange = Acc_submit_msg
+                , value = ""
+                , label =
+                    Input.placeholder
+                        { label = Input.labelRight (
+                            Element.image Searchbar [ height fill ]
+                              { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
+                              , caption = "search"
+                              }
+                              )
+                        , text = "commands"
+                        }
+                , options = []
+                }
+            , Element.image None [ height fill, width fill ]
+                { src = "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"
+                , caption = "account_options"
+                }
+            ])
     , el Mainviewstyle
         [ width (fill)
-        , height (fillPortion 9) ]
+        , height (fillPortion 11) ]
         ( mainview )
     ]
 
 view: Model -> Html Msg
 view model =
   Element.viewport stylesheet <|
-    appshell menu menu mainview
+    appshell
 
 
 main : Program Never Model Msg
