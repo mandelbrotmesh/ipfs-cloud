@@ -30,7 +30,14 @@ model =
   { drawer_isopen = False
   , account_options_open = False
   , files =
-      ["Qn"]
+      [ "Qnlkfjsdaklfalöfksjföaldfdaldjlösfj"
+      , "q3sfddddddddddddddddddddddddddddddddddn"
+      , "sldkfjlkjsdlf"
+      , "fsdklfljslk"
+      , "q3sfddddddddddddddddddddddddddddddddddn"
+      , "sldkfjlkjsdlf"
+      , "fsdklfljslk"
+      ]
   }
 
 
@@ -63,19 +70,6 @@ update msg model =
 --         |> Result.withDefault
 --             (Html.text "Error while encoding to QRCode.")
 
-menubuttonstyle =
-  style
-    [ ("vertical-align", "center")
-    , ("height", "6vh")
-    , ("width", "6vh")
-    , ("min-height","60px")
-    , ("min-width", "60px")
-    , ("backgroundColor", "rgba(0, 0, 0, 0)")
-    , ("border", "none")
-    , ("position", "absolute")
-    , ("cursor", "pointer")
-    ]
-
 overlaystyle =
   style
     [ ("position", "fixed")
@@ -87,6 +81,19 @@ overlaystyle =
     , ("right", "0")
     , ("backgroundColor", "rgba(0, 0, 0, 0.5)")
     , ("z-index", "2")
+    ]
+
+menubuttonstyle =
+  style
+    [ ("vertical-align", "center")
+    , ("height", "6vh")
+    , ("width", "6vh")
+    , ("min-height","60px")
+    , ("min-width", "60px")
+    , ("backgroundColor", "rgba(0, 0, 0, 0)")
+    , ("border", "none")
+    , ("position", "absolute")
+    , ("cursor", "pointer")
     ]
 
 account_menu : Html.Html Msg
@@ -103,7 +110,7 @@ appshell  =
         , ("width", "100vw")
         , ("height", "8vh")
         , ("min-height", "70px")
-        , ("display", "flex")
+        , ("box-shadow", "0px 5px 5px #888888")
         ]
     ]
     [ button
@@ -126,15 +133,13 @@ appshell  =
             , ("min-height", "60px")
             , ("width", "calc(100vw - 20vh - 120px)")
             , ("margin", "1vh")
-            -- , ("margin-left", "8vh")
-            -- , ("margin-right", "8vh")
             , ("left", "calc(60px + 8vh)")
-            -- , ("right", "calc(60px + 8vh)")
             , ("border-radius", "1vh")
             , ("border", "none")
             , ("backgroundColor", "gray")
             , ("font-size", "4vh")
             , ("padding-left", "2vh")
+            , ("padding-right", "2vh")
             ]
         , onInput (Acc_submit_msg)
         ]
@@ -170,6 +175,45 @@ appshell  =
 
     ]
 
+mainview : Html.Html Msg
+mainview =
+  div
+    [ style
+        [ ("display", "flex")
+        , ("flex-wrap", "wrap")
+        , ("margin", "2vh")
+        -- , ("flex-basis", "400px")
+        ]
+    ]
+    (List.concatMap
+      (\hs ->
+        [ div
+            [ style
+                [ ("margin", "1vh")
+                , ("width", "140px")
+                , ("max-width", "200px")
+                , ("height", "200px")
+
+                ]
+            ]
+            [ img
+                [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+                , style
+                    [("width", "100%")
+                    , ("fill", "gray")]
+                ]
+                []
+            , p
+                [ style
+                    [ ("overflow", "hidden")
+                    , ("text-overflow", "ellipsis")
+                    ]
+                ]
+                [text hs]
+            ]
+        ]
+      ) model.files)
+
 
 confa : List String -> List (Html.Html msg)
 confa hasher =
@@ -178,7 +222,11 @@ confa hasher =
 
 view: Model -> Html Msg
 view model =
-  appshell
+  div
+    []
+    [ appshell
+    , mainview
+    ]
 
   -- div
   --   []
