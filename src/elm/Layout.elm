@@ -2,16 +2,17 @@ module Layout exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Color exposing (..)
--- import Svg exposing (..)
--- import Svg.Attributes exposing (..)
+
+
 
 menubuttonstyle =
   style
     [ ("vertical-align", "center")
     , ("height", "6vh")
     , ("width", "6vh")
-    , ("backgroundColor", "blue")
+    , ("backgroundColor", "rgba(0, 0, 0, 0)")
     , ("border", "none")
     , ("position", "absolute")
     , ("top", "1vh")
@@ -24,11 +25,16 @@ appshell =
         [ ("backgroundColor", "red")
         , ("width", "100vw")
         , ("height", "8vh")
-        ] ]
+        ]
+    ]
     [ button
-        [ menubuttonstyle, style [ ("left", "1vh") ]]
+        [ menubuttonstyle
+        , style [ ("left", "1vh") ]
+        ]
         [ img
-            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg"]
+            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg"
+            , style [("width", "100%")]
+            ]
             []
         ]
     , input
@@ -41,19 +47,32 @@ appshell =
             , ("border-radius", "1vh")
             , ("border", "none")
             , ("backgroundColor", "gray")
-            , ("font-size", "5vh")]
+            , ("font-size", "4vh")
+            , ("padding-left", "2vh")]
         ]
         []
     , button
-        [ menubuttonstyle, style [ ("right", "10vh")]]
+        [ menubuttonstyle
+        , style
+            [ ("right", "10vh")
+            , ("border-radius", "1vh")
+            ]
+        , onClick (Use_drawer True)
+        ]
         [ img
-            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"]
-            []
+            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
+            , style [("width", "100%")]
+            ]
+            [ ]
         ]
     , button
-        [ menubuttonstyle, style [ ("right", "1vh")]]
+        [ menubuttonstyle
+        , style [ ("right", "1vh")]
+        ]
         [ img
-            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"]
+            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"
+            , style [("width", "100%")]
+            ]
             []
         ]
 

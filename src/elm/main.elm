@@ -1,40 +1,36 @@
 port module Main exposing (..)
 
-import Html exposing (Html, text)
--- import Html.Attributes exposing (..)
--- import Html.Events exposing (..)
-
 import Color exposing (..)
-import Style exposing (..)
-import Style.Color as Color
-import Style.Border as Border
-import Layout exposing (..)
 
-import Element exposing (..)
-import Element.Attributes exposing (..)
-import Element.Input as Input
-import Element.Input exposing (search, text, disabled)
-import Style.Font exposing (size)
+-- import Layout exposing (..)
+
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import MimeType exposing (..)
 
 import String
 import QRCode
 import Svg
---import Svg.Attributes exposing (..)
-
+import List exposing (map)
 --model
 
 port acc_submit : String -> Cmd msg
 
+
 type alias Model =
-  { acc_psw : String
-  , drawer_isopen : Bool
+  { drawer_isopen : Bool
+  , account_options_open : Bool
+  , files : List String
   }
+
 
 model : Model
 model =
-  {
-    acc_psw = "blub"
-  , drawer_isopen = False
+  { drawer_isopen = False
+  , account_options_open = False
+  , files =
+      ["Qn"]
   }
 
 
@@ -45,15 +41,17 @@ model =
 type Msg
   = Acc_submit_msg String
   | Use_drawer Bool
+  | Open_account_options Bool
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Acc_submit_msg msg ->
-      ( model, acc_submit model.acc_psw )
+      ( model, acc_submit msg )
     Use_drawer msg ->
-      ({model | drawer_isopen = True}, Cmd.none)
-
+      ({model | drawer_isopen = msg}, Cmd.none)
+    Open_account_options msg ->
+      ({model | account_options_open = msg}, Cmd.none)
 
 --view
 
@@ -65,11 +63,110 @@ update msg model =
 --         |> Result.withDefault
 --             (Html.text "Error while encoding to QRCode.")
 
+menubuttonstyle =
+  style
+    [ ("vertical-align", "center")
+    , ("height", "6vh")
+    , ("width", "6vh")
+    , ("backgroundColor", "rgba(0, 0, 0, 0)")
+    , ("border", "none")
+    , ("position", "absolute")
+    , ("top", "1vh")
+    , ("cursor", "pointer")]
+
+overlaystyle =
+  style
+    [ ("position", "fixed")
+    , ("width", "100vw")
+    , ("height", "100vh")
+    , ("top", "0")
+    , ("left", "100vw")
+    , ("bottom", "0")
+    , ("right", "0")
+    , ("backgroundColor", "rgba(0, 0, 0, 0.5)")
+    , ("z-index", "2")
+    ]
+
+account_menu : Html.Html Msg
+account_menu =
+  div
+    []
+    []
+
+appshell : Html.Html Msg
+appshell  =
+  div
+    [ style
+        [ ("backgroundColor", "red")
+        , ("width", "100vw")
+        , ("height", "8vh")
+        ]
+    ]
+    [ button
+        [ menubuttonstyle
+        , style [ ("left", "1vh") ]
+        , onClick (Use_drawer True)
+        ]
+        [ img
+            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg"
+            , style [("width", "100%")]
+            ]
+            []
+        ]
+    , input
+        [ style
+            [ ("position", "absolute")
+            , ("height", "6vh")
+            , ("width", "calc(100vw - 18vh)")
+            , ("top", "1vh")
+            , ("left", "8vh")
+            , ("border-radius", "1vh")
+            , ("border", "none")
+            , ("backgroundColor", "gray")
+            , ("font-size", "4vh")
+            , ("padding-left", "2vh")
+            ]
+        , onInput (Acc_submit_msg)
+        ]
+        []
+    , button
+        [ menubuttonstyle
+        , style
+            [ ("right", "10vh")
+            , ("border-radius", "1vh")
+            ]
+        ]
+        [ img
+            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
+            , style [("width", "100%")]
+            ]
+            [ ]
+        ]
+    , button
+        [ menubuttonstyle
+        , style [ ("right", "1vh")]
+        , onClick (Open_account_options True)
+        ]
+        [ img
+            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg", style [("width", "100%")]]
+            []
+        ]
+
+    ]
+
+
+confa : List String -> List (Html.Html msg)
+confa hasher =
+  List.concatMap (\hs -> [div [] [text hs]] ) hasher
 
 
 view: Model -> Html Msg
 view model =
   appshell
+
+  -- div
+  --   []
+  --   (confa model.files)
 
 
 main : Program Never Model Msg
