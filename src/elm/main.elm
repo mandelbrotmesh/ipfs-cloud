@@ -68,11 +68,13 @@ menubuttonstyle =
     [ ("vertical-align", "center")
     , ("height", "6vh")
     , ("width", "6vh")
+    , ("min-height","60px")
+    , ("min-width", "60px")
     , ("backgroundColor", "rgba(0, 0, 0, 0)")
     , ("border", "none")
     , ("position", "absolute")
-    , ("top", "1vh")
-    , ("cursor", "pointer")]
+    , ("cursor", "pointer")
+    ]
 
 overlaystyle =
   style
@@ -100,11 +102,15 @@ appshell  =
         [ ("backgroundColor", "red")
         , ("width", "100vw")
         , ("height", "8vh")
+        , ("min-height", "70px")
+        , ("display", "flex")
         ]
     ]
     [ button
         [ menubuttonstyle
-        , style [ ("left", "1vh") ]
+        , style
+            [ ("left", "0")
+            , ("margin", "1vh")]
         , onClick (Use_drawer True)
         ]
         [ img
@@ -117,9 +123,13 @@ appshell  =
         [ style
             [ ("position", "absolute")
             , ("height", "6vh")
-            , ("width", "calc(100vw - 18vh)")
-            , ("top", "1vh")
-            , ("left", "8vh")
+            , ("min-height", "60px")
+            , ("width", "calc(100vw - 20vh - 120px)")
+            , ("margin", "1vh")
+            -- , ("margin-left", "8vh")
+            -- , ("margin-right", "8vh")
+            , ("left", "calc(60px + 8vh)")
+            -- , ("right", "calc(60px + 8vh)")
             , ("border-radius", "1vh")
             , ("border", "none")
             , ("backgroundColor", "gray")
@@ -132,7 +142,8 @@ appshell  =
     , button
         [ menubuttonstyle
         , style
-            [ ("right", "10vh")
+            [ ("right", "calc(10vh + 60px)")
+            , ("margin", "1vh")
             , ("border-radius", "1vh")
             ]
         ]
@@ -144,11 +155,16 @@ appshell  =
         ]
     , button
         [ menubuttonstyle
-        , style [ ("right", "1vh")]
+        , style
+            [ ("right", "0")
+            , ("margin", "1vh")
+            ]
         , onClick (Open_account_options True)
         ]
         [ img
-            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg", style [("width", "100%")]]
+            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"
+            , style [("width", "100%")]
+            ]
             []
         ]
 
