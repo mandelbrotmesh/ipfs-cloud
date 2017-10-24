@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Color exposing (..)
 
--- import Layout exposing (..)
+import Layout exposing (Msg)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -13,52 +13,29 @@ import String
 import QRCode
 import Svg
 import List exposing (map)
---model
-
-port acc_submit : String -> Cmd msg
 
 
-type alias Model =
-  { drawer_isopen : Bool
-  , account_options_open : Bool
-  , files : List String
-  }
 
-
-model : Model
-model =
-  { drawer_isopen = False
-  , account_options_open = False
-  , files =
-      [ "Qnlkfjsdaklfalöfksjföaldfdaldjlösfj"
-      , "q3sfddddddddddddddddddddddddddddddddddn"
-      , "sldkfjlkjsdlf"
-      , "fsdklfljslk"
-      , "q3sfddddddddddddddddddddddddddddddddddn"
-      , "sldkfjlkjsdlf"
-      , "fsdklfljslk"
-      ]
-  }
 
 
 --update : Msg -> Model -> (Model, Cmd Msg)
 
 --type alias Acc_submit_msg = String
 
-type Msg
-  = Acc_submit_msg String
-  | Use_drawer Bool
-  | Open_account_options Bool
+-- type Msg
+--   = Acc_submit_msg String
+--   | Use_drawer Bool
+--   | Open_account_options Bool
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
-  case msg of
-    Acc_submit_msg msg ->
-      ( model, acc_submit msg )
-    Use_drawer msg ->
-      ({model | drawer_isopen = msg}, Cmd.none)
-    Open_account_options msg ->
-      ({model | account_options_open = msg}, Cmd.none)
+-- update : Layout.Msg -> Model -> (Model, Cmd Layout.Msg)
+-- update msg model =
+--   case msg of
+--     Layout.Acc_submit_msg msg ->
+--       ( model, acc_submit msg )
+--     Layout.Use_drawer msg ->
+--       ({model | drawer_isopen = msg}, Cmd.none)
+--     Layout.Open_account_options msg ->
+--       ({model | account_options_open = msg}, Cmd.none)
 
 --view
 
@@ -69,179 +46,6 @@ update msg model =
 --         |> Result.map QRCode.toSvg
 --         |> Result.withDefault
 --             (Html.text "Error while encoding to QRCode.")
-
-overlaystyle =
-  style
-    [ ("position", "fixed")
-    , ("width", "100vw")
-    , ("height", "100vh")
-    , ("top", "0")
-    , ("left", "100vw")
-    , ("bottom", "0")
-    , ("right", "0")
-    , ("backgroundColor", "rgba(0, 0, 0, 0.5)")
-    , ("z-index", "2")
-    ]
-
-menubuttonstyle =
-  style
-    [ ("vertical-align", "center")
-    , ("height", "6vh")
-    , ("width", "6vh")
-    , ("min-height","60px")
-    , ("min-width", "60px")
-    , ("backgroundColor", "rgba(0, 0, 0, 0)")
-    , ("border", "none")
-    , ("position", "absolute")
-    , ("cursor", "pointer")
-    ]
-
-account_menu : Html.Html Msg
-account_menu =
-  div
-    []
-    []
-
-appshell : Html.Html Msg
-appshell  =
-  div
-    [ style
-        [ ("backgroundColor", "red")
-        , ("width", "100vw")
-        , ("height", "8vh")
-        , ("min-height", "70px")
-        , ("box-shadow", "0px 5px 5px #888888")
-        ]
-    ]
-    [ button
-        [ menubuttonstyle
-        , style
-            [ ("left", "0")
-            , ("margin", "1vh")]
-        , onClick (Use_drawer True)
-        ]
-        [ img
-            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg"
-            , style [("width", "100%")]
-            ]
-            []
-        ]
-    , input
-        [ style
-            [ ("position", "absolute")
-            , ("height", "6vh")
-            , ("min-height", "60px")
-            , ("width", "calc(100vw - 20vh - 120px)")
-            , ("margin", "1vh")
-            , ("left", "calc(60px + 8vh)")
-            , ("border-radius", "1vh")
-            , ("border", "none")
-            , ("backgroundColor", "gray")
-            , ("font-size", "4vh")
-            , ("padding-left", "2vh")
-            , ("padding-right", "2vh")
-            ]
-        , onInput (Acc_submit_msg)
-        ]
-        []
-    , button
-        [ menubuttonstyle
-        , style
-            [ ("right", "calc(10vh + 60px)")
-            , ("margin", "1vh")
-            , ("border-radius", "1vh")
-            ]
-        ]
-        [ img
-            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
-            , style [("width", "100%")]
-            ]
-            [ ]
-        ]
-    , button
-        [ menubuttonstyle
-        , style
-            [ ("right", "0")
-            , ("margin", "1vh")
-            ]
-        , onClick (Open_account_options True)
-        ]
-        [ img
-            [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"
-            , style [("width", "100%")]
-            ]
-            []
-        ]
-
-    ]
-
-mainview : Html.Html Msg
-mainview =
-  div
-    [ style
-        [ ("display", "flex")
-        , ("flex-wrap", "wrap")
-        , ("margin", "2vh")
-        -- , ("flex-basis", "400px")
-        ]
-    ]
-    (List.concatMap
-      (\hs ->
-        [ div
-            [ style
-                [ ("margin", "1vh")
-                , ("width", "140px")
-                , ("max-width", "200px")
-                , ("height", "200px")
-
-                ]
-            ]
-            [ img
-                [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
-                , style
-                    [("width", "100%")
-                    , ("fill", "gray")]
-                ]
-                []
-            , p
-                [ style
-                    [ ("overflow", "hidden")
-                    , ("text-overflow", "ellipsis")
-                    ]
-                ]
-                [text hs]
-            ]
-        ]
-      ) model.files)
-
-
-confa : List String -> List (Html.Html msg)
-confa hasher =
-  List.concatMap (\hs -> [div [] [text hs]] ) hasher
-
-
-view: Model -> Html Msg
-view model =
-  div
-    []
-    [ appshell
-    , mainview
-    ]
-
-  -- div
-  --   []
-  --   (confa model.files)
-
-
-main : Program Never Model Msg
-main =
-  Html.program
-  { init = ( model, Cmd.none )
-  , view = view
-  , subscriptions = \model ->
-    Sub.none
-  , update = update
-  }
 
 
 -----------------------------------------------------------------------------
