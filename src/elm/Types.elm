@@ -6,6 +6,8 @@ import Html.Events exposing (..)
 import Color exposing (..)
 
 port acc_submit : String -> Cmd msg
+port ipfs_get : String -> Cmd msg
+port ipfs_answer : ( List String -> msg) -> Sub msg
 
 type alias Model =
   { drawer_isopen : Bool
@@ -15,5 +17,7 @@ type alias Model =
 
 type Msg
   = Acc_submit_msg String
+  | Ipfs_get String
+  | Ipfs_answer (List String)
   | Use_drawer Bool
   | Open_account_options Bool

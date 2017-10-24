@@ -8,7 +8,7 @@ const $body = document.querySelector('body')
 
 require('../index.html')
 
-var Elm = require('../elm/main.elm')
+var Elm = require('../elm/App.elm')
 var mountNode = document.getElementById('main')
 var app = Elm.Main.embed(mountNode)
 
@@ -85,21 +85,66 @@ function start () {
 
 function createFileBlob (data, multihash) {
   const file = new window.Blob(data, {type: 'application/octet-binary'})
+
+
+  function get_blob_mime(blob) {
+    const getMimetype = (signature) => {
+          switch (signature) {
+              case '89504E47':
+                  return 'image/png'
+              case '47494638':
+                  return 'image/gif'
+              case '25504446':
+                  return 'application/pdf'
+              case 'FFD8FFDB':
+              case 'FFD8FFE0':
+                  return 'image/jpeg'
+              case '504B0304':
+                  return 'application/zip'
+              default:
+                  return 'Unknown filetype'
+          }
+        }
+
+    var blob = blob.slice(0,4)
+    var fileReader = new window.FileReader();
+    fileReader.onloadend = function(e) {
+      var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
+      var header = "";
+      for(var i = 0; i < arr.length; i++) {
+         header += arr[i].toString(16);
+      }
+      header = header.toUpperCase()
+      console.log(header);
+      console.log(getMimetype(header));
+      // Check the file signature against known types
+
+  };
+  fileReader.readAsArrayBuffer(blob);
+  }
+
+  // get_blob_mime(file)
+
   const fileUrl = window.URL.createObjectURL(file)
 
-  const listItem = document.createElement('div')
-  const link = document.createElement('a')
-  link.setAttribute('href', fileUrl)
-  link.setAttribute('download', multihash)
+  // const listItem = document.createElement('div')
+  // const link = document.createElement('img')
+  // link.setAttribute('href', fileUrl)
+  // link.setAttribute('download', multihash)
   const date = (new Date()).toLocaleTimeString()
 
-  listItem.appendChild(link)
-  return listItem
+  // var catgif = new Image(100, 200);
+  // catgif.src = fileUrl
+  // document.body.appendChild(catgif);
+
+  // listItem.appendChild(link)
+  return {"url": fileUrl, "mime": get_blob_mime(file)} //listItem
 }
+
+var item = []
 
 function getFile (multihash) {
   //const multihash = ""
-
 
   if (!multihash) {
     return console.log('no multihash was inserted')
@@ -121,15 +166,20 @@ function getFile (multihash) {
         // buffer up all the data in the file
         file.content.on('data', (data) => buf.push(data))
         file.content.once('end', () => {
-          const listItem = createFileBlob(buf, multihash)
+          item = createFileBlob(buf, multihash)
         })
         file.content.resume()
       }
     })
     filesStream.resume()
     filesStream.on('end', () => console.log('Every file was fetched for', multihash))
+
+
   })
+  console.log(item);
+  return item
 }
+
 
 /*
  * Drag and drop
@@ -347,5 +397,15 @@ app.ports.acc_submit.subscribe(
   function myfunction(acc_psw) {
     var acpsw = acc_psw
     console.log(acpsw)
+  }
+)
+
+app.ports.ipfs_get.subscribe(
+  function myfunction( bla) {
+    var multihashstr = bla
+    console.log("port: " + multihashstr)
+    var answer = getFile(multihashstr)
+    console.log(answer);
+    app.ports.ipfs_answer.send(answer)
   }
 )

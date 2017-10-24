@@ -21,6 +21,7 @@ overlaystyle =
     , ("z-index", "2")
     ]
 
+menubuttonstyle : Attribute msg
 menubuttonstyle =
   style
     [ ("vertical-align", "center")
@@ -82,7 +83,8 @@ appshell  =
             , ("padding-left", "2vh")
             , ("padding-right", "2vh")
             ]
-        , onInput (Types.Acc_submit_msg)
+        -- , onInput (Types.Acc_submit_msg)
+        , onInput (Types.Ipfs_get)
         ]
         []
     , button
@@ -124,7 +126,6 @@ mainview =
         , ("flex-wrap", "wrap")
         , ("margin", "2vh")
         , ("margin-top", "calc(8vh + 60px)")
-        -- , ("flex-basis", "400px")
         ]
     ]
     (List.concatMap

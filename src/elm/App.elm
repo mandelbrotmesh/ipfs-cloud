@@ -9,7 +9,7 @@ main =
   Html.program
   { init = ( model, Cmd.none )
   , view = view
-  , subscriptions = \model ->
-    Sub.none
+  , subscriptions = subscriptions
+    -- \model -> Sub.none
   , update = State.update
   }
