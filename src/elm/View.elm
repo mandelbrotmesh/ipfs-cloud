@@ -128,7 +128,7 @@ mainview =
         , ("margin-top", "calc(8vh + 60px)")
         ]
     ]
-    (List.concatMap
+    ( List.concatMap
       (\hs ->
         [ div
             [ style
@@ -152,10 +152,11 @@ mainview =
                     , ("text-overflow", "ellipsis")
                     ]
                 ]
-                [text hs]
+                [text (.url hs)]
             ]
         ]
-      ) model.files)
+      ) model.files
+    )
 
 
 confa : List String -> List (Html.Html msg)

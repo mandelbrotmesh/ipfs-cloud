@@ -7,19 +7,8 @@ model =
   { drawer_isopen = False
   , account_options_open = False
   , files =
-      [ "Qnlkfjsdaklfalöfksjföaldfdaldjlösfj"
-      , "q3sfddddddddddddddddddddddddddddddddddn"
-      , "sldkfjlkjsdlf"
-      , "fsdklfljslk"
-      , "q3sfddddddddddddddddddddddddddddddddddn"
-      , "sldkfjlkjsdlf"
-      , "fsdklfljslk"
-      , "q3sfddddddddddddddddddddddddddddddddddn"
-      , "sldkfjlkjsdlf"
-      , "fsdklfljslk"
-      , "q3sfddddddddddddddddddddddddddddddddddn"
-      , "sldkfjlkjsdlf"
-      , "fsdklfljslk"
+      [ { url = "Qnlkfjsdaklfalöfksjföaldfdaldjlösfj", mime = "image"}
+      , { url = "Qntekfjsdaklfalöfksjföaldfdaldjlösfj", mime = "audio"}
       ]
   }
 
@@ -31,7 +20,7 @@ update msg model =
     Ipfs_get msg ->
       ( model, ipfs_get msg )
     Ipfs_answer msg ->
-      ( {model | files = msg }, Cmd.none )
+      ( {model | files = (msg::model.files) }, Cmd.none )
     Use_drawer msg ->
       ( {model | drawer_isopen = msg}, Cmd.none)
     Open_account_options msg ->

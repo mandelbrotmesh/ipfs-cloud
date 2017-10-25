@@ -19,6 +19,8 @@ const Room = require('ipfs-pubsub-room')
 let node
 let peerInfo
 
+var item = {}
+
 // var account =
 //   {'time': 0,
 //    'devices': {}
@@ -85,63 +87,63 @@ function start () {
 
 function createFileBlob (data, multihash) {
   const file = new window.Blob(data, {type: 'application/octet-binary'})
-
-
-  function get_blob_mime(blob) {
-    const getMimetype = (signature) => {
-          switch (signature) {
-              case '89504E47':
-                  return 'image/png'
-              case '47494638':
-                  return 'image/gif'
-              case '25504446':
-                  return 'application/pdf'
-              case 'FFD8FFDB':
-              case 'FFD8FFE0':
-                  return 'image/jpeg'
-              case '504B0304':
-                  return 'application/zip'
-              default:
-                  return 'Unknown filetype'
-          }
-        }
-
-    var blob = blob.slice(0,4)
-    var fileReader = new window.FileReader();
-    fileReader.onloadend = function(e) {
-      var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
-      var header = "";
-      for(var i = 0; i < arr.length; i++) {
-         header += arr[i].toString(16);
-      }
-      header = header.toUpperCase()
-      console.log(header);
-      console.log(getMimetype(header));
-      // Check the file signature against known types
-
-  };
-  fileReader.readAsArrayBuffer(blob);
-  }
-
-  // get_blob_mime(file)
-
   const fileUrl = window.URL.createObjectURL(file)
+  var mime = "";
+  const getMimetype = (signature) => {
+        switch (signature) {
+            case '89504E47':
+                return 'image/png'
+            case '47494638':
+                return 'image/gif'
+            case '25504446':
+                return 'application/pdf'
+            case 'FFD8FFDB':
+            case 'FFD8FFE0':
+                return 'image/jpeg'
+            case '504B0304':
+                return 'application/zip'
+            default:
+                return 'Unknown filetype'
+        }
+      }
+
+  var blob = file.slice(0,4)
+
+  var fileReader = new window.FileReader();
+  console.log("test");
+  fileReader.onloadend = function(e) {
+    var header = "";
+    var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
+    for(var i = 0; i < arr.length; i++) {
+       header += arr[i].toString(16);
+    }
+    header = header.toUpperCase()
+
+    // console.log(header);
+    console.log("port-send: " + getMimetype(header));
+
+    mime = getMimetype(header)
+
+    var answer = {"url": fileUrl, "mime": mime} //listItem
+    console.log(answer);
+    app.ports.ipfs_answer.send(answer)
+
+}
+fileReader.readAsArrayBuffer(blob);
+
+}
 
   // const listItem = document.createElement('div')
   // const link = document.createElement('img')
   // link.setAttribute('href', fileUrl)
   // link.setAttribute('download', multihash)
-  const date = (new Date()).toLocaleTimeString()
+  // const date = (new Date()).toLocaleTimeString()
 
   // var catgif = new Image(100, 200);
   // catgif.src = fileUrl
   // document.body.appendChild(catgif);
 
   // listItem.appendChild(link)
-  return {"url": fileUrl, "mime": get_blob_mime(file)} //listItem
-}
-
-var item = []
 
 function getFile (multihash) {
   //const multihash = ""
@@ -166,7 +168,8 @@ function getFile (multihash) {
         // buffer up all the data in the file
         file.content.on('data', (data) => buf.push(data))
         file.content.once('end', () => {
-          item = createFileBlob(buf, multihash)
+          createFileBlob(buf, multihash)
+          // console.log(item);
         })
         file.content.resume()
       }
@@ -176,8 +179,8 @@ function getFile (multihash) {
 
 
   })
-  console.log(item);
-  return item
+
+  // console.log(item);
 }
 
 
@@ -404,8 +407,7 @@ app.ports.ipfs_get.subscribe(
   function myfunction( bla) {
     var multihashstr = bla
     console.log("port: " + multihashstr)
-    var answer = getFile(multihashstr)
-    console.log(answer);
-    app.ports.ipfs_answer.send(answer)
+    getFile(multihashstr)
+
   }
 )
