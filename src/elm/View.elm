@@ -28,8 +28,8 @@ menubuttonstyle =
     [ ("vertical-align", "center")
     , ("height", "6vh")
     , ("width", "6vh")
-    , ("min-height","60px")
-    , ("min-width", "60px")
+    , ("min-height","40px")
+    , ("min-width", "40px")
     , ("backgroundColor", "rgba(0, 0, 0, 0)")
     , ("border", "none")
     , ("position", "absolute")
@@ -49,7 +49,7 @@ appshell  =
         [ ("backgroundColor", "red")
         , ("width", "100vw")
         , ("height", "8vh")
-        , ("min-height", "70px")
+        , ("min-height", "50px")
         , ("box-shadow", "0px 5px 5px #888888")
         , ("position", "fixed")
         , ("top", "0vh")
@@ -73,10 +73,10 @@ appshell  =
         [ style
             [ ("position", "absolute")
             , ("height", "6vh")
-            , ("min-height", "60px")
-            , ("width", "calc(100vw - 20vh - 120px)")
+            , ("min-height", "40px")
+            , ("width", "calc(100vw - 20vh - 80px)")
             , ("margin", "1vh")
-            , ("left", "calc(60px + 8vh)")
+            , ("left", "calc(40px + 8vh)")
             , ("border-radius", "1vh")
             , ("border", "none")
             , ("backgroundColor", "gray")
@@ -92,7 +92,7 @@ appshell  =
     , button
         [ menubuttonstyle
         , style
-            [ ("right", "calc(10vh + 60px)")
+            [ ("right", "calc(10vh + 40px)")
             , ("margin", "1vh")
             , ("border-radius", "0px 1vh 1vh 0px")
             , ("backgroundColor", "rgba(80, 80, 80, 1)")
