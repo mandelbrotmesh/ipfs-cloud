@@ -7,6 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
+import MimeType exposing (..)
 
 overlaystyle =
   style
@@ -57,7 +58,7 @@ appshell  =
     [ button
         [ menubuttonstyle
         , style
-            [ ("left", "0")
+            [ ("left", "10px")
             , ("margin", "1vh")]
         , onClick (Types.Use_drawer True)
         ]
@@ -81,10 +82,11 @@ appshell  =
             , ("backgroundColor", "gray")
             , ("font-size", "4vh")
             , ("padding-left", "2vh")
-            , ("padding-right", "2vh")
+            , ("padding-right", "calc(2vh + 60px)")
+            , ("box-sizing", "border-box")
             ]
         -- , onInput (Types.Acc_submit_msg)
-        , onInput (Types.Ipfs_get)
+        , onInput Types.Searchfield_msg --(Types.Ipfs_get)
         ]
         []
     , button
@@ -92,8 +94,10 @@ appshell  =
         , style
             [ ("right", "calc(10vh + 60px)")
             , ("margin", "1vh")
-            , ("border-radius", "1vh")
+            , ("border-radius", "0px 1vh 1vh 0px")
+            , ("backgroundColor", "rgba(80, 80, 80, 1)")
             ]
+        , onClick Types.Ipfs_get
         ]
         [ img
             [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
@@ -104,7 +108,7 @@ appshell  =
     , button
         [ menubuttonstyle
         , style
-            [ ("right", "0")
+            [ ("right", "10px")
             , ("margin", "1vh")
             ]
         , onClick (Types.Open_account_options True)
@@ -118,38 +122,83 @@ appshell  =
 
     ]
 
-mainview : Html.Html Types.Msg
-mainview =
+filesymbol : Types.File -> String
+filesymbol fil =
+  case fil.mime of
+    Nothing ->
+      "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
+    Just mimeType ->
+      case mimeType of
+        Image subtype ->
+          if (subtype == MimeType.Jpeg) then
+            fil.url
+            --"Successfully parsed as jpeg image"
+          else
+            "Some image, but not a jpeg"
+        Audio subtype ->
+          if (subtype == MimeType.Mp3) then
+            "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
+            --"Successfully parsed as jpeg image"
+          else
+            "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
+        Video subtype ->
+          if (subtype == MimeType.Mp4) then
+            "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/notification/svg/production/ic_ondemand_video_48px.svg"
+            --"Successfully parsed as jpeg image"
+          else
+            "Some image, but not a jpeg"
+        _ ->
+          "Other mime type"
+
+-- filetohtmlel : Types.Model -> Html.Html Types.Msg
+-- filetohtmlel model =
+
+
+mainview : Types.Model -> Html.Html Types.Msg
+mainview model =
   div
     [ style
         [ ("display", "flex")
         , ("flex-wrap", "wrap")
-        , ("margin", "2vh")
-        , ("margin-top", "calc(8vh + 60px)")
+        , ("padding", "2vh")
+        , ("padding-top", "calc(8vh + 60px)")
+        , ("min-height", "calc(90vh - 60px)")
+        , ("backgroundColor", "rgba(229, 229, 229, 1)")
         ]
     ]
     ( List.concatMap
       (\hs ->
         [ div
             [ style
-                [ ("margin", "1vh")
-                , ("width", "140px")
-                , ("max-width", "200px")
-                , ("height", "200px")
-
+                [ ("margin", "5px")
+                , ("width", "100px")
+                -- , ("max-width", "140px")
+                , ("height", "150px")
+                , ("backgroundColor", "rgba(255, 255, 255, 1")
+                , ("box-shadow", "5px 5px 5px #888888")
+                , ("padding", "5px")
                 ]
             ]
-            [ img
-                [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
-                , style
-                    [("width", "100%")
-                    , ("fill", "gray")]
+            [ div
+                [ style [("height", "100px")]]
+                [ img
+                    [ --src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+                      src (filesymbol hs)
+                    , style
+                        [("width", "100px")
+                        , ("fill", "gray")]
+                    ]
+                    []
                 ]
-                []
             , p
                 [ style
                     [ ("overflow", "hidden")
                     , ("text-overflow", "ellipsis")
+                    , ("max-height", "40px")
+                    , ("margin", "0")
+
+                    -- , ("position", "absolute")
+                    -- , ("top", "100px")
                     ]
                 ]
                 [text (.url hs)]
@@ -169,5 +218,5 @@ view model =
   div
     []
     [ appshell
-    , mainview
+    , mainview model
     ]

@@ -19,7 +19,6 @@ const Room = require('ipfs-pubsub-room')
 let node
 let peerInfo
 
-var item = {}
 
 // var account =
 //   {'time': 0,
@@ -102,6 +101,8 @@ function createFileBlob (data, multihash) {
                 return 'image/jpeg'
             case '504B0304':
                 return 'application/zip'
+            case '4F676753':
+                return 'audio/ogg'
             default:
                 return 'Unknown filetype'
         }
@@ -119,7 +120,7 @@ function createFileBlob (data, multihash) {
     }
     header = header.toUpperCase()
 
-    // console.log(header);
+    console.log(header);
     console.log("port-send: " + getMimetype(header));
 
     mime = getMimetype(header)
@@ -132,18 +133,6 @@ function createFileBlob (data, multihash) {
 fileReader.readAsArrayBuffer(blob);
 
 }
-
-  // const listItem = document.createElement('div')
-  // const link = document.createElement('img')
-  // link.setAttribute('href', fileUrl)
-  // link.setAttribute('download', multihash)
-  // const date = (new Date()).toLocaleTimeString()
-
-  // var catgif = new Image(100, 200);
-  // catgif.src = fileUrl
-  // document.body.appendChild(catgif);
-
-  // listItem.appendChild(link)
 
 function getFile (multihash) {
   //const multihash = ""
@@ -351,11 +340,11 @@ function onError (err) {
 window.onerror = onError
 
 function onDragEnter () {
-  //$dragoverPopup.style.display = 'block'
+  $dragoverPopup.style.display = 'block'
 }
 
 function onDragExit () {
-  //$dragoverPopup.style.display = 'none'
+  $dragoverPopup.style.display = 'none'
 }
 
 const states = {
