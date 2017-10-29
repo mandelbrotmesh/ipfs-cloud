@@ -15,6 +15,8 @@ var app = Elm.Main.embed(mountNode)
 
 const streamBuffers = require('stream-buffers')
 const Ipfs = require('ipfs')
+const ipfsApi = require('ipfsApi')
+
 const Room = require('ipfs-pubsub-room')
 
 let node
@@ -404,7 +406,15 @@ startApplication()
 app.ports.ipfs_get.subscribe(
   function myfunction( bla) {
     var multihashstr = bla
-    console.log("port: " + multihashstr)
+    console.log("port get: " + multihashstr)
+    getFile(multihashstr)
+  }
+)
+
+app.ports.ipfs_pin_ls.subscribe(
+  function myfunction( bla) {
+    var multihashstr = bla
+    console.log("port pin ls: " + multihashstr)
     getFile(multihashstr)
   }
 )

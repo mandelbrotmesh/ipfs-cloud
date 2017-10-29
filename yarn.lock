@@ -1030,7 +1030,7 @@ cids@^0.4.2:
     multicodec "~0.1.7"
     multihashes "~0.4.4"
 
-cids@^0.5.0, cids@^0.5.1, cids@~0.5.0, cids@~0.5.1:
+cids@^0.5.0, cids@^0.5.1, cids@~0.5.0, cids@~0.5.1, cids@~0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/cids/-/cids-0.5.2.tgz#c1baf306f8165baaabfb5134b5c20a50450548a6"
   dependencies:
@@ -1835,6 +1835,10 @@ file-type@^6.1.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-6.2.0.tgz#e50cd75d356ffed4e306dc4f5bcf52a79903a919"
 
+file-type@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/file-type/-/file-type-7.2.0.tgz#113cfed52e1d6959ab80248906e2f25a8cdccb74"
+
 filename-regex@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/filename-regex/-/filename-regex-2.0.1.tgz#c1c4b9bee3e09725ddb106b75c1e301fe2f18b26"
@@ -2416,6 +2420,39 @@ ipfs-api@^14.3.5:
     promisify-es6 "^1.0.3"
     pump "^1.0.2"
     qs "^6.5.0"
+    readable-stream "^2.3.3"
+    stream-http "^2.7.2"
+    streamifier "^0.1.1"
+    tar-stream "^1.5.4"
+
+ipfs-api@^15.0.1:
+  version "15.0.1"
+  resolved "https://registry.yarnpkg.com/ipfs-api/-/ipfs-api-15.0.1.tgz#360bba76808af369daf9cad4c608d98d03ae5135"
+  dependencies:
+    async "^2.5.0"
+    bs58 "^4.0.1"
+    cids "~0.5.2"
+    concat-stream "^1.6.0"
+    detect-node "^2.0.3"
+    flatmap "0.0.3"
+    glob "^7.1.2"
+    glob-escape "0.0.2"
+    ipfs-block "~0.6.0"
+    ipfs-unixfs "~0.1.13"
+    ipld-dag-pb "~0.11.2"
+    is-ipfs "^0.3.2"
+    is-stream "^1.1.0"
+    lru-cache "^4.1.1"
+    multiaddr "^3.0.1"
+    multihashes "~0.4.12"
+    multipart-stream "^2.0.1"
+    ndjson "^1.5.0"
+    once "^1.4.0"
+    peer-id "~0.10.2"
+    peer-info "~0.11.0"
+    promisify-es6 "^1.0.3"
+    pump "^1.0.2"
+    qs "^6.5.1"
     readable-stream "^2.3.3"
     stream-http "^2.7.2"
     streamifier "^0.1.1"
@@ -3688,6 +3725,12 @@ mkdirp@0.5.1, mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.1, mkdirp@~0.5.0, mkdi
   dependencies:
     minimist "0.0.8"
 
+mmmagic@^0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/mmmagic/-/mmmagic-0.4.5.tgz#883468e4423a75937674350018c4062d215eb2e2"
+  dependencies:
+    nan "^2.4.0"
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -3746,6 +3789,13 @@ multihashes@^0.4.5, multihashes@^0.4.9, multihashes@~0.4.4, multihashes@~0.4.5, 
     bs58 "^4.0.1"
     varint "^5.0.0"
 
+multihashes@~0.4.12:
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/multihashes/-/multihashes-0.4.12.tgz#0d31b18c92baeb50ecd040bbdc4a564d2e52aeb1"
+  dependencies:
+    bs58 "^4.0.1"
+    varint "^5.0.0"
+
 multihashing-async@^0.4.5, multihashing-async@^0.4.6, multihashing-async@~0.4.5, multihashing-async@~0.4.6:
   version "0.4.6"
   resolved "https://registry.yarnpkg.com/multihashing-async/-/multihashing-async-0.4.6.tgz#b01c8d0745ccac085afd7a9a5e8182f73505d7f7"
@@ -3794,7 +3844,7 @@ murmurhash3js@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/murmurhash3js/-/murmurhash3js-3.0.1.tgz#3e983e5b47c2a06f43a713174e7e435ca044b998"
 
-nan@^2.0, nan@^2.0.5, nan@^2.2.1, nan@^2.3.0, nan@^2.6.2, nan@~2.7.0:
+nan@^2.0, nan@^2.0.5, nan@^2.2.1, nan@^2.3.0, nan@^2.4.0, nan@^2.6.2, nan@~2.7.0:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
 
@@ -4182,6 +4232,15 @@ peer-id@^0.10.0, peer-id@^0.10.1, peer-id@~0.10.0, peer-id@~0.10.1:
     lodash "^4.17.4"
     multihashes "~0.4.9"
 
+peer-id@~0.10.2:
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/peer-id/-/peer-id-0.10.2.tgz#88cefb53b13a5135e78be51e7f32a107fb3916bb"
+  dependencies:
+    async "^2.5.0"
+    libp2p-crypto "~0.10.3"
+    lodash "^4.17.4"
+    multihashes "~0.4.9"
+
 peer-info@^0.11.0, peer-info@~0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/peer-info/-/peer-info-0.11.0.tgz#c14b6a7d139a0d4a2db3160b4d4cc15bf6bf06e0"
@@ -4520,7 +4579,7 @@ punycode@^1.2.4, punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
-qs@^6.5.0:
+qs@^6.5.0, qs@^6.5.1:
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.1.tgz#349cdf6eef89ec45c12d7d5eb3fc0c870343a6d8"
 

@@ -7,7 +7,7 @@ import State exposing (..)
 main : Program Never Types.Model Types.Msg
 main =
   Html.program
-  { init = ( model, Cmd.none )
+  { init = ( model, Ipfs_pin_ls True )
   , view = view
   , subscriptions = subscriptions
     -- \model -> Sub.none
