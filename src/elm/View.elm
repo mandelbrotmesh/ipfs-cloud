@@ -6,8 +6,9 @@ import State exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-
-import MimeType exposing (..)
+import String exposing(split)
+-- import Array exposing(get)
+-- import MimeType exposing (..)
 
 overlaystyle =
   style
@@ -160,12 +161,26 @@ add_button =
 -- "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/notification/svg/production/ic_ondemand_video_48px.svg"
 -- "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
 
+get_mediatype : String -> String
+get_mediatype mime =
+  case List.head (String.split mime "/") of
+    Just val -> val --List.head (String.split mime "/")
+    Nothing -> "a"
+    -- Nothing -> ""
+
 filesymbol : Types.File -> String
 filesymbol file =
-  if file.mime == "unkown" then
+  if file.mime == "Unknown filetype" then
     "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
-  else
+  else if (get_mediatype file.mime) == "image" then
     maddrtourl file.maddr
+  else if (get_mediatype file.mime) == "audio" then
+    "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
+  else if (get_mediatype file.mime) == "video" then
+    "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/notification/svg/production/ic_ondemand_video_48px.svg"
+  else
+    "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
+    --maddrtourl file.maddr
 
 mainview : Types.Model -> Html.Html Types.Msg
 mainview model =
@@ -180,44 +195,47 @@ mainview model =
         ]
     ]
     ( List.concatMap
-      (\hs ->
-        [ div
-            [ style
-                [ ("margin", "5px")
-                , ("width", "100px")
-                -- , ("max-width", "140px")
-                , ("height", "150px")
-                , ("backgroundColor", "rgba(255, 255, 255, 1")
-                , ("box-shadow", "5px 5px 5px #888888")
-                , ("padding", "5px")
-                ]
-            ]
-            [ div
-                [ style [("height", "100px")]]
-                [ img
-                    [ src (filesymbol hs) --(.mime hs) --(filesymbol hs)
-                    , style
-                        [ ("width", "100px")
-                        , ("fill", "gray")]
-                    ]
-                    []
-                ]
-            , p
-                [ style
-                    [ ("overflow", "hidden")
-                    , ("text-overflow", "ellipsis")
-                    , ("max-height", "40px")
-                    , ("margin", "0")
-
-                    -- , ("position", "absolute")
-                    -- , ("top", "100px")
-                    ]
-                ]
-                [text (.maddr hs) ]
-            ]
-        ]
-      ) model.files
+      (media_element) model.files
     )
+
+media_element : Types.File -> List (Html.Html Types.Msg)
+media_element file =
+  [ div
+      [ style
+          [ ("margin", "5px")
+          , ("width", "100px")
+          -- , ("max-width", "140px")
+          , ("height", "150px")
+          , ("backgroundColor", "rgba(255, 255, 255, 1")
+          , ("box-shadow", "5px 5px 5px #888888")
+          , ("padding", "5px")
+          ]
+      ]
+      [ div
+          [ style [("height", "100px")]]
+          [ img
+              [ src (filesymbol file) --(.mime hs) --(filesymbol hs)
+              , style
+                  [ ("width", "100px")
+                  , ("fill", "gray")]
+              ]
+              []
+          ]
+      , p
+          [ style
+              [ ("overflow", "hidden")
+              , ("text-overflow", "ellipsis")
+              , ("max-height", "40px")
+              , ("margin", "0")
+
+              -- , ("position", "absolute")
+              -- , ("top", "100px")
+              ]
+          ]
+          [text (.maddr file) ]
+      ]
+    ]
+
 
 maddrtourl : Maddr -> String
 maddrtourl maddr =
