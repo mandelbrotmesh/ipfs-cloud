@@ -60,7 +60,7 @@ appshell  =
         , style
             [ ("left", "10px")
             , ("margin", "1vh")]
-        , onClick (Types.Use_drawer True)
+        -- , onClick (Types.Use_drawer True)
         ]
         [ img
             [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg"
@@ -85,8 +85,7 @@ appshell  =
             , ("padding-right", "calc(2vh + 60px)")
             , ("box-sizing", "border-box")
             ]
-        -- , onInput (Types.Acc_submit_msg)
-        , onInput Types.Searchfield_msg --(Types.Ipfs_get)
+        , onInput Types.Searchfield_msg
         ]
         []
     , button
@@ -97,7 +96,7 @@ appshell  =
             , ("border-radius", "0px 1vh 1vh 0px")
             , ("backgroundColor", "rgba(80, 80, 80, 1)")
             ]
-        , onClick Types.Ipfs_get
+        , onClick Types.Ipfs_get -- model.searchfield)
         ]
         [ img
             [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
@@ -111,7 +110,7 @@ appshell  =
             [ ("right", "10px")
             , ("margin", "1vh")
             ]
-        , onClick (Types.Open_account_options True)
+        -- , onClick (Types.Open_account_options True)
         ]
         [ img
             [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"
@@ -122,37 +121,51 @@ appshell  =
 
     ]
 
+
+
+
+add_button : Html.Html Types.Msg
+add_button =
+  input
+    [ attribute "type" "file"
+    , attribute "onchange" "onUpbtn();"
+    , style
+        [ ("position", "fixed")
+        , ("border-radius", "50%")
+        , ("bottom", "calc(6vh + 20px)")
+        , ("right", "6wh")
+        , ("left", "calc(100vw - 14vh - 20px)")
+        , ("min-height", "20px")
+        , ("min-width", "20px")
+        , ("width", "8vh")
+        , ("height", "8vh")
+        , ("backgroundColor", "red")
+        , ("border", "none")
+        ]
+    -- , onClick (Ipfs_add True)
+    ]
+    [ img
+        [ --src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+          src "http://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/content/svg/production/ic_add_48px.svg"
+        , style
+            [ ("width", "100%") ]
+        ]
+        []
+
+    ]
+
+
+-- "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
+-- "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
+-- "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/notification/svg/production/ic_ondemand_video_48px.svg"
+-- "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+
 filesymbol : Types.File -> String
-filesymbol fil =
-  case fil.mime of
-    Nothing ->
-      "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
-    Just mimeType ->
-      case mimeType of
-        Image subtype ->
-          if (subtype == MimeType.Jpeg) then
-            fil.url
-            --"Successfully parsed as jpeg image"
-          else
-            "Some image, but not a jpeg"
-        Audio subtype ->
-          if (subtype == MimeType.Mp3) then
-            "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
-            --"Successfully parsed as jpeg image"
-          else
-            "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
-        Video subtype ->
-          if (subtype == MimeType.Mp4) then
-            "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/notification/svg/production/ic_ondemand_video_48px.svg"
-            --"Successfully parsed as jpeg image"
-          else
-            "Some image, but not a jpeg"
-        _ ->
-          "Other mime type"
-
--- filetohtmlel : Types.Model -> Html.Html Types.Msg
--- filetohtmlel model =
-
+filesymbol file =
+  if file.mime == "unkown" then
+    "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
+  else
+    maddrtourl file.maddr
 
 mainview : Types.Model -> Html.Html Types.Msg
 mainview model =
@@ -182,10 +195,9 @@ mainview model =
             [ div
                 [ style [("height", "100px")]]
                 [ img
-                    [ --src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
-                      src (filesymbol hs)
+                    [ src (filesymbol hs) --(.mime hs) --(filesymbol hs)
                     , style
-                        [("width", "100px")
+                        [ ("width", "100px")
                         , ("fill", "gray")]
                     ]
                     []
@@ -201,12 +213,15 @@ mainview model =
                     -- , ("top", "100px")
                     ]
                 ]
-                [text (.url hs)]
+                [text (.maddr hs) ]
             ]
         ]
       ) model.files
     )
 
+maddrtourl : Maddr -> String
+maddrtourl maddr =
+  "https://ipfs.io/ipfs/" ++ maddr
 
 confa : List String -> List (Html.Html msg)
 confa hasher =
@@ -219,4 +234,5 @@ view model =
     []
     [ appshell
     , mainview model
+    , add_button
     ]

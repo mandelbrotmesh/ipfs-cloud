@@ -4,6 +4,7 @@
 const $dragoverPopup = document.querySelector('.dragover-popup')
 const $body = document.querySelector('body')
 
+
 // var cryptojs = require('crypto-js')
 
 require('../index.html')
@@ -125,7 +126,7 @@ function createFileBlob (data, multihash) {
 
     mime = getMimetype(header)
 
-    var answer = {"url": fileUrl, "mime": mime} //listItem
+    var answer = [{"maddr": multihash, "mime": mime}] //listItem
     console.log(answer);
     app.ports.ipfs_answer.send(answer)
 
@@ -180,16 +181,25 @@ function onDrop (event) {
   onDragExit()
   event.preventDefault()
   console.log('ondrop')
-  upload(event)
+
+  const dt = event.dataTransfer
+  const files = dt.files
+
+  upload(files)
 }
 
-function upload (event){
+function onUpbtn() {
+  console.log("onupbtn")
+  var files = this.files
+  upload(files)
+}
+
+function upload (files){
   if (!node) {
     onError('IPFS must be started before files can be added')
     return
   }
-  const dt = event.dataTransfer
-  const files = dt.files
+
 
   function readFileContents (file) {
     return new Promise((resolve) => {
@@ -372,10 +382,16 @@ function updateView (state, ipfs) {
  */
 const startApplication = () => {
   // Setup event listeners
-
   $body.addEventListener('dragenter', onDragEnter)
   $body.addEventListener('drop', onDrop)
 
+  // var upbtn = document.getElementById('upbtn')
+  // if (upbtn)
+  //  {  console.log("shit finallly");
+  //    $upbtn.addEventListener('change', onUpbtn, false) }
+
+
+  // document.addEventListener()
   // TODO should work to hide the dragover-popup but doesn't...
   $body.addEventListener('dragleave', onDragExit)
 
@@ -385,18 +401,16 @@ const startApplication = () => {
 
 startApplication()
 
-app.ports.acc_submit.subscribe(
-  function myfunction(acc_psw) {
-    var acpsw = acc_psw
-    console.log(acpsw)
-  }
-)
-
 app.ports.ipfs_get.subscribe(
   function myfunction( bla) {
     var multihashstr = bla
     console.log("port: " + multihashstr)
     getFile(multihashstr)
-
   }
 )
+
+// app.ports.ipfs_add.subscribe(
+//   function ofd (bla){
+//   $('input[type="file"]').click();
+//   }
+// )
