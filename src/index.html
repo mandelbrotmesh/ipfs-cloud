@@ -22,7 +22,7 @@
   </head>
 
 
-  <body id="main" ondragover="event.preventDefault()"
+  <body ondragover="event.preventDefault()"
   style="font-family: sans-serif;pointer-events: auto;margin: 0px;
     position: absolute; top: 0px; right: 0px; left: 0px; min-height: 100vh;">
    <!-- height: 100vh;
@@ -30,7 +30,15 @@
         background: linear-gradient(to bottom,#041727 0%,#062b3f 100%);
 
         -->
+        <div id="main">
 
+        </div>
+
+<input type="file" id="upbtn"
+  style="z-index: 3; position: fixed; border-radius: 50%;
+    bottom: calc(6vh + 20px); left: calc((100vw - 14vh) - 20px);
+    min-height: 20px; min-width: 20px; width: 8vh; height: 8vh;
+    background-color: red; border: none; opacity: 0;">
 
 
     <div class="dragover-popup"

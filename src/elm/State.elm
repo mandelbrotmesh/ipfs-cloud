@@ -10,17 +10,31 @@ model =
   , files = []
   }
 
+-- ipfs_cmd_send : Ipfs_cmd -> Cmd msg
+-- ipfs_cmd_send msg =
+--   case msg of
+--     Ipfs_get msg ->
+--       ipfs_cmd msg
+--     Ipfs_pin msg ->
+--       ipfs_cmd msg
+--     Ipfs_pin_ls msg ->
+--       ipfs_cmd msg
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Searchfield_msg msg ->
       ( {model | searchfield = msg}, Cmd.none )
-    Ipfs_get ->
-      (model, ipfs_get model.searchfield)
+    Ipfs_cat msg ->
+      (model, ipfs_cmd {action = "cat", maddr = model.searchfield} )
+    Ipfs_add msg ->
+      (model, ipfs_cmd {action= "add", maddr= msg})
     Ipfs_pin msg ->
-      (model, ipfs_pin msg)
+      (model, ipfs_cmd {action= "pin", maddr= msg})
     Ipfs_pin_ls msg ->
-      (model, ipfs_pin_ls True)
+      (model, ipfs_cmd {action= "pin_ls", maddr= msg})
+    -- Ipfs_cmd msg ->
+    --   (model, ipfs_cmd_send msg )
     Ipfs_answer msg ->
       ( { model | files = msg }, Cmd.none )
 

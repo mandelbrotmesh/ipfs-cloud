@@ -12,6 +12,16 @@ type alias Maddr
 type alias Mime
   = String
 
+-- type Ipfs_action
+--   = Ipfs_get
+--   | Ipfs_pin
+--   | Ipfs_pin_ls
+
+type alias Ipfs_cmd =
+  { action: String
+  , maddr: Maddr
+  }
+
 type alias File =
   { maddr : Maddr
   , mime : Mime
@@ -24,9 +34,11 @@ type alias Model =
 
 type Msg
   = Searchfield_msg String
-  | Ipfs_get --Maddr
+  | Ipfs_cat Maddr
+  | Ipfs_add Maddr
   | Ipfs_pin Maddr
-  | Ipfs_pin_ls Bool
+  | Ipfs_pin_ls Maddr
+  -- | Ipfs_cmd Ipfs_action
   | Ipfs_answer (List File)
 
   -- | Ipfs_add Bool

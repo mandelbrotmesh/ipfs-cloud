@@ -1,17 +1,20 @@
 'use strict'
 /* global self */
 
+require('../index.html')
+
 const $dragoverPopup = document.querySelector('.dragover-popup')
 const $body = document.querySelector('body')
 
-
 // var cryptojs = require('crypto-js')
 
-require('../index.html')
 
 var Elm = require('../elm/App.elm')
 var mountNode = document.getElementById('main')
 var app = Elm.Main.embed(mountNode)
+
+
+
 
 const streamBuffers = require('stream-buffers')
 const Ipfs = require('ipfs')
@@ -114,7 +117,6 @@ function createFileBlob (data, multihash) {
   var blob = file.slice(0,4)
 
   var fileReader = new window.FileReader();
-  console.log("test");
   fileReader.onloadend = function(e) {
     var header = "";
     var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
@@ -397,19 +399,47 @@ const startApplication = () => {
   // TODO should work to hide the dragover-popup but doesn't...
   $body.addEventListener('dragleave', onDragExit)
 
+
   start()
 
 }
 
+
 startApplication()
 
-app.ports.ipfs_get.subscribe(
-  function myfunction( bla) {
-    var multihashstr = bla
-    console.log("port get: " + multihashstr)
-    getFile(multihashstr)
+var $upbtn = document.getElementById('upbtn')
+$upbtn.addEventListener('change', onUpbtn)
+
+app.ports.ipfs_cmd.subscribe(
+  function handle_action(msg) {
+    switch (msg['action']) {
+      case "cat":
+        console.log("port " + msg);
+        getFile(msg['maddr'])
+        break;
+      case "get":
+        console.log("port " + msg);
+        break;
+      case "add":
+        console.log("port " + msg);
+        $upbtn.click();
+        break;
+      case "pin":
+        console.log("port " + msg);
+        break;
+      case "pin_ls":
+        console.log("port " + msg);
+        break;
+      // default:
+
+    }
+
+    // var multihashstr = action
+    // console.log("port get: " + multihashstr)
+    // getFile(multihashstr)
   }
 )
+
 
 // app.ports.ipfs_pin_ls.subscribe(
 //   function myfunction( bla) {

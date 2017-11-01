@@ -97,7 +97,7 @@ appshell  =
             , ("border-radius", "0px 1vh 1vh 0px")
             , ("backgroundColor", "rgba(80, 80, 80, 1)")
             ]
-        , onClick Types.Ipfs_get -- model.searchfield)
+        , onClick (Types.Ipfs_cat model.searchfield)
         ]
         [ img
             [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg"
@@ -127,10 +127,11 @@ appshell  =
 
 add_button : Html.Html Types.Msg
 add_button =
-  input
-    [ attribute "type" "file"
-    , attribute "onchange" "onUpbtn();"
-    , style
+  button
+    [ --attribute "type" "file"
+    --, attribute "id" "upbtn"
+    -- , attribute "onchange" "onUpbtn();"
+     style
         [ ("position", "fixed")
         , ("border-radius", "50%")
         , ("bottom", "calc(6vh + 20px)")
@@ -143,7 +144,7 @@ add_button =
         , ("backgroundColor", "red")
         , ("border", "none")
         ]
-    -- , onClick (Ipfs_add True)
+    , onClick (Ipfs_add "bla")
     ]
     [ img
         [ --src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
@@ -163,10 +164,9 @@ add_button =
 
 get_mediatype : String -> String
 get_mediatype mime =
-  case List.head (String.split mime "/") of
-    Just val -> val --List.head (String.split mime "/")
+  case List.head (String.split "/" mime ) of
+    Just val -> val
     Nothing -> "a"
-    -- Nothing -> ""
 
 filesymbol : Types.File -> String
 filesymbol file =
@@ -194,12 +194,10 @@ mainview model =
         , ("backgroundColor", "rgba(229, 229, 229, 1)")
         ]
     ]
-    ( List.concatMap
-      (media_element) model.files
-    )
+    ( List.concatMap file_view model.files )
 
-media_element : Types.File -> List (Html.Html Types.Msg)
-media_element file =
+file_view : Types.File -> List (Html.Html Types.Msg)
+file_view file =
   [ div
       [ style
           [ ("margin", "5px")
@@ -225,8 +223,9 @@ media_element file =
           [ style
               [ ("overflow", "hidden")
               , ("text-overflow", "ellipsis")
-              , ("max-height", "40px")
+              , ("max-height", "50px")
               , ("margin", "0")
+              , ("word-break", "break-all" )
 
               -- , ("position", "absolute")
               -- , ("top", "100px")

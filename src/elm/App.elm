@@ -3,11 +3,11 @@ import View exposing(..)
 import Types exposing (..)
 import Html exposing (..)
 import State exposing (..)
-import Ports exposing(ipfs_pin_ls)
+-- import Ports exposing(ipfs_cmd)
 main : Program Never Types.Model Types.Msg
 main =
   Html.program
-  { init = ( model, Ports.ipfs_pin_ls True )
+  { init = ( model, Cmd.none ) --javascript handles init async; Ports.ipfs_cmd {action = "Pin_ls", maddr = ""} )
   , view = view
   , subscriptions = subscriptions
     -- \model -> Sub.none
