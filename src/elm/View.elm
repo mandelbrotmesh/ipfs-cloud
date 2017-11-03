@@ -172,6 +172,8 @@ filesymbol : Types.File -> String
 filesymbol file =
   if file.mime == "Unknown filetype" then
     "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
+  else if file.mime == "inode/directory" then
+    "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
   else if (get_mediatype file.mime) == "image" then
     maddrtourl file.maddr
   else if (get_mediatype file.mime) == "audio" then
@@ -182,48 +184,45 @@ filesymbol file =
     "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
     --maddrtourl file.maddr
 
-mainview : Types.Model -> Html.Html Types.Msg
-mainview model =
-  div
-    [ style
-        [ ("display", "flex")
-        , ("flex-wrap", "wrap")
-        , ("padding", "2vh")
-        , ("padding-top", "calc(8vh + 60px)")
-        , ("min-height", "calc(90vh - 60px)")
-        , ("backgroundColor", "rgba(229, 229, 229, 1)")
-        ]
-    ]
-    ( List.concatMap file_view model.files )
+
 
 file_view : Types.File -> List (Html.Html Types.Msg)
 file_view file =
   [ div
       [ style
           [ ("margin", "5px")
-          , ("width", "100px")
+          , ("width", "120px")
           -- , ("max-width", "140px")
-          , ("height", "150px")
+          , ("height", "180px")
           , ("backgroundColor", "rgba(255, 255, 255, 1")
-          , ("box-shadow", "5px 5px 5px #888888")
+          , ("box-shadow", "3px 3px 3px #888888")
           , ("padding", "5px")
           ]
       ]
-      [ div
-          [ style [("height", "100px")]]
-          [ img
-              [ src (filesymbol file) --(.mime hs) --(filesymbol hs)
-              , style
-                  [ ("width", "100px")
-                  , ("fill", "gray")]
-              ]
-              []
+      [ img
+          [ src "https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg"
+          , style
+              [ ("width", "20px")
+              , ("fill", "gray")]
           ]
+          []
+      , img
+          [ src (filesymbol file) --(.mime hs) --(filesymbol hs)
+          , style
+              [ ("width", "120px")
+              , ("max-height", "100px")
+              , ("fill", "gray")]
+          , onClick (Action_switch (Playing_audio [file]))
+          ]
+          []
+          --(.mime hs) --(filesymbol hs)
       , p
           [ style
-              [ ("overflow", "hidden")
+              [ ("overflow-x", "hidden")
+              , ("overflow-y", "ellipsis")
               , ("text-overflow", "ellipsis")
               , ("max-height", "50px")
+              , ("width", "120px")
               , ("margin", "0")
               , ("word-break", "break-all" )
 
@@ -235,14 +234,54 @@ file_view file =
       ]
     ]
 
+-- confa : List String -> List (Html.Html msg)
+-- confa hasher =
+--   List.concatMap (\hs -> [div [] [text hs]] ) hasher
 
 maddrtourl : Maddr -> String
 maddrtourl maddr =
   "https://ipfs.io/ipfs/" ++ maddr
 
-confa : List String -> List (Html.Html msg)
-confa hasher =
-  List.concatMap (\hs -> [div [] [text hs]] ) hasher
+
+-- mainview : Types.Model -> Html.Html Types.Msg
+-- mainview model =
+--   div
+--     [ style
+--         [ ("display", "flex")
+--         , ("flex-wrap", "wrap")
+--         , ("padding", "2vh")
+--         , ("padding-top", "calc(8vh + 60px)")
+--         , ("min-height", "calc(90vh - 60px)")
+--         , ("backgroundColor", "rgba(229, 229, 229, 1)")
+--         ]
+--     ]
+--     ( List.concatMap file_view model.files )
+
+browser : List Types.File -> Html Types.Msg
+browser files =
+  div
+    [ style
+        [ ("display", "flex")
+        , ("flex-wrap", "wrap")
+        , ("padding", "2vh")
+        , ("padding-top", "calc(8vh + 60px)")
+        , ("min-height", "calc(90vh - 60px)")
+        , ("backgroundColor", "rgba(229, 229, 229, 1)")
+        ]
+    ]
+    ( List.concatMap file_view files )
+
+audio_player : Types.Files -> Html Types.Msg
+audio_player files =
+  div
+    []
+    [text ("playing audio ")]
+
+video_player : Types.Files -> Html Types.Msg
+video_player maddr =
+  div
+    []
+    [text ("playing video ")]
 
 
 view: Types.Model -> Html Types.Msg
@@ -250,6 +289,15 @@ view model =
   div
     []
     [ appshell
-    , mainview model
-    , add_button
+    , case model.action of
+        Browsing files ->
+          browser files
+        Playing_audio files ->
+          audio_player files
+        Playing_video files ->
+          video_player files
+
+    -- , mainview model
+    -- , player model
+    -- , add_button
     ]

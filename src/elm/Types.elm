@@ -27,19 +27,30 @@ type alias File =
   , mime : Mime
   }
 
+type alias Files =
+  List File
+
+type Action
+  = Browsing Files
+  | Playing_audio Files
+  | Playing_video Files
+
+
 type alias Model =
-  { searchfield : String
-  , files : (List File)
+  { action : Action
+  , searchfield : String
+  , files : Files
   }
 
 type Msg
   = Searchfield_msg String
+  | Action_switch Action
   | Ipfs_cat Maddr
   | Ipfs_add Maddr
   | Ipfs_pin Maddr
   | Ipfs_pin_ls Maddr
   -- | Ipfs_cmd Ipfs_action
-  | Ipfs_answer (List File)
+  | Ipfs_answer Files
 
   -- | Ipfs_add Bool
 

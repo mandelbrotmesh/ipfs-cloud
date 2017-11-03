@@ -1,12 +1,13 @@
 module State exposing (..)
 
 import Types exposing (..)
-import MimeType exposing (..)
+-- import MimeType exposing (..)
 import Ports exposing (..)
 
 model : Types.Model
 model =
-  { searchfield = ""
+  { action = Browsing [{ maddr = "Qma7cGNxVCVHwcjzYzDgR34hPxeSg1FsFHUNk1ytz8XASY", mime = "inode/directory"}]
+  , searchfield = ""
   , files = []
   }
 
@@ -23,6 +24,8 @@ model =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    Action_switch msg ->
+      ( {model | action = msg}, Cmd.none)
     Searchfield_msg msg ->
       ( {model | searchfield = msg}, Cmd.none )
     Ipfs_cat msg ->
