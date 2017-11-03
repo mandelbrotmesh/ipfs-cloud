@@ -28,6 +28,16 @@ type alias File =
   , ispinned : Bool
   }
 
+type Styles
+  = None
+  | Menustyle
+  | Menubuttonstyle
+  | Searchbarstyle
+  | Searchbarbuttonstyle
+  | Browserstyle
+  | Filestyle
+
+
 type alias Files =
   List File
 
