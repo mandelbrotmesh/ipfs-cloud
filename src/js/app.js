@@ -107,6 +107,8 @@ function createFileBlob (data, multihash) {
                 return 'image/jpeg'
             case '504B0304':
                 return 'application/zip'
+            case '00020':
+                return 'video/mp4'
             case '4F676753':
                 return 'audio/ogg'
             default:
@@ -130,7 +132,7 @@ function createFileBlob (data, multihash) {
 
     mime = getMimetype(header)
 
-    var answer = [{"maddr": multihash, "mime": mime}] //listItem
+    var answer = [{"maddr": multihash, "mime": mime, "ispinned": true}] //listItem
     console.log(answer);
     app.ports.ipfs_answer.send(answer)
 
@@ -409,6 +411,8 @@ startApplication()
 
 var $upbtn = document.getElementById('upbtn')
 $upbtn.addEventListener('change', onUpbtn)
+
+// app.ports.ipfs_answer.send(answer)
 
 app.ports.ipfs_cmd.subscribe(
   function handle_action(msg) {

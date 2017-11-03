@@ -25,6 +25,7 @@ type alias Ipfs_cmd =
 type alias File =
   { maddr : Maddr
   , mime : Mime
+  , ispinned : Bool
   }
 
 type alias Files =
@@ -32,8 +33,9 @@ type alias Files =
 
 type Action
   = Browsing Files
-  | Playing_audio Files
-  | Playing_video Files
+  | Showing_img Maddr
+  | Playing_audio Maddr
+  | Playing_video Maddr
 
 
 type alias Model =
