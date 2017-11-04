@@ -23,65 +23,70 @@ appshell model =
 
 menu : Types.Model -> Element Styles variation Msg
 menu model =
-  el Menustyle
-    [ width fill, height (px 60) ]
-    ( row None
-        [ height (px 60), width fill, padding 10, spacing 10, spread ]
-        [ button Menubuttonstyle
-            [ width (px 40), height (px 40)]
-            ( image None
-                [ width (px 40), height (px 40) ]
-                { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg")
-                , caption = "open_drawer"
-                }
-            )
-        , row None
-            [ width fill ]
-            [ Input.text Searchbarstyle
-                [ width fill, padding 10 ]
-                { onChange = Searchfield_msg
-                , value = ""
-                , label =  Input.placeholder
-                            { label = Input.labelLeft ( empty )
-                            , text = "search"
-                            }
-                , options = []
-                }
-            , button Searchbarbuttonstyle
+  screen
+    ( el Menustyle
+        [ width fill, height (px 60) ]
+        ( row None
+            [ height (px 60), width fill, padding 10, spacing 10, spread ]
+            [ button Menubuttonstyle
+                [ width (px 40), height (px 40)]
+                ( image None
+                    [ width (px 40), height (px 40) ]
+                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg")
+                    , caption = "open_drawer"
+                    }
+                )
+            , row None
+                [ width fill ]
+                [ Input.text Searchbarstyle
+                    [ width fill, padding 10 ]
+                    { onChange = Searchfield_msg
+                    , value = ""
+                    , label =  Input.placeholder
+                                { label = Input.labelLeft ( empty )
+                                , text = "search"
+                                }
+                    , options = []
+                    }
+                , button Searchbarbuttonstyle
+                    [ width (px 40), height (px 40), onClick (Types.Ipfs_cat model.searchfield) ]
+                    ( image None
+                        [ width (px 40), height (px 40) ]
+                        { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg")
+                        , caption = "start_search"
+                        }
+                    )
+                ]
+            , button Menubuttonstyle
                 [ width (px 40), height (px 40) ]
                 ( image None
                     [ width (px 40), height (px 40) ]
-                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg")
-                    , caption = "start_search"
+                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_file_upload_48px.svg")
+                    , caption = "upload_file"
                     }
                 )
+
             ]
-        , button Menubuttonstyle
-            [ width (px 40), height (px 40) ]
-            ( image None
-                [ width (px 40), height (px 40) ]
-                { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_file_upload_48px.svg")
-                , caption = "upload_file"
-                }
-            )
 
-        ]
-
+        )
     )
 
 
 mainview : Types.Model -> Element Styles variation Msg
 mainview model =
-  case model.action of
-    Browsing files ->
-      browser files
-    Showing_img maddr->
-      show_img maddr
-    Playing_audio maddr ->
-      audio_player maddr
-    Playing_video maddr ->
-      video_player maddr
-
+  column None
+    [ width fill, height fill ]
+    [ el None [ width fill, height (px 60) ] ( empty )
+    , case model.action of
+        Browsing files ->
+          browser files
+        Showing_img maddr->
+          show_img maddr
+        Playing_audio maddr ->
+          audio_player maddr
+        Playing_video maddr ->
+          video_player maddr
+    ]
 
 
 browser : Types.Files -> Element Styles variation Msg
@@ -202,81 +207,23 @@ file_view file =
               { src = (Utils.filesymbol file)
               , caption = "play_file"
               }
-          , paragraph None
-              [ width fill, height (px 50)]
-              [ text (.maddr file) ]
+          , html
+              ( Html.p
+                  [ Hattr.style
+                      [ ("overflow-x", "hidden")
+                      , ("overflow-y", "ellipsis")
+                      , ("text-overflow", "ellipsis")
+                      , ("max-height", "50px")
+                      , ("width", "110px")
+                      , ("margin", "0")
+                      , ("word-break", "break-all" )
+                      ]
+                  ]
+                  [ Html.text (.maddr file) ]
+              )
+          -- , paragraph None
+          --     [ width fill, height (px 50)]
+          --     [ text (.maddr file) ]
           ]
       )
   ]
-  --
-  --
-  -- [ div
-  --     [ style
-  --         [ ("margin", "5px")
-  --         , ("width", "120px")
-  --         -- , ("max-width", "140px")
-  --         , ("height", "180px")
-  --         , ("backgroundColor", "rgba(255, 255, 255, 1")
-  --         , ("box-shadow", "3px 3px 3px #888888")
-  --         , ("padding", "5px")
-  --         ]
-  --     ]
-  --     [ div
-  --         [ style
-  --             [("display", "flex")
-  --             , ("flex-direction", "row-reverse")
-  --             ]
-  --         ]
-  --         [ --text file.mime
-  --          img
-  --             [ src (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_more_vert_48px.svg") --"https://ipfs.io/ipfs/QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_expand_more_48px.svg"
-  --             , style
-  --                 [ ("width", "20px")
-  --                 , ("height", "20px")
-  --                 , ("fill", "gray")
-  --                 ]
-  --             ]
-  --             []
-  --           , img
-  --             [ src
-  --                 ( if file.ispinned == False then
-  --                     (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_border_24px.svg")
-  --                   else
-  --                     (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
-  --                 )
-  --             , style
-  --                 [ ("width", "20px")
-  --                 , ("height", "20px")
-  --                 , ("fill", "gray")
-  --                 ]
-  --             , onClick (Ipfs_pin file.maddr)
-  --             ]
-  --             []
-  --         ]
-  --     , img
-  --         [ src (filesymbol file) --(.mime hs) --(filesymbol hs)
-  --         , style
-  --             [ ("width", "120px")
-  --             , ("max-height", "100px")
-  --             , ("fill", "gray")]
-  --         , onClick (Action_switch ( play file )) --"QmTca4A43f4kEvzTouvYTegtp6KobixRqweV12NrvwwtFP"))--"QmaMc3URC5Jqt3HrfP2beBkB56Y232YUqR3itguzup91je"))
-  --         ]
-  --         []
-  --         --(.mime hs) --(filesymbol hs)
-  --     , p
-  --         [ style
-  --             [ ("overflow-x", "hidden")
-  --             , ("overflow-y", "ellipsis")
-  --             , ("text-overflow", "ellipsis")
-  --             , ("max-height", "50px")
-  --             , ("width", "120px")
-  --             , ("margin", "0")
-  --             , ("word-break", "break-all" )
-  --
-  --             -- , ("position", "absolute")
-  --             -- , ("top", "100px")
-  --             ]
-  --         ]
-  --         [text (.maddr file) ]
-  --     ]
-  --   ]

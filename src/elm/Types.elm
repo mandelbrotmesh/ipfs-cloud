@@ -1,10 +1,6 @@
 port module Types exposing (..)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Color exposing (..)
-import MimeType exposing (..)
+--import MimeType exposing (..)
 
 type alias Maddr
   = String
