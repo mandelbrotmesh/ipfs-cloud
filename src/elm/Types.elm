@@ -18,6 +18,12 @@ type alias Ipfs_cmd =
   , maddr: Maddr
   }
 
+type alias Cid_rec =
+  { cid : String
+  , name : String
+  , size : Int
+  }
+
 type alias File =
   { maddr : Maddr
   , mime : Mime
@@ -38,7 +44,7 @@ type alias Files =
   List File
 
 type Action
-  = Browsing Files
+  = Browsing Ipld_node --Files
   | Showing_img Maddr
   | Playing_audio Maddr
   | Playing_video Maddr
@@ -50,6 +56,14 @@ type alias Model =
   , files : Files
   }
 
+type alias Ipld_node = String
+
+-- type alias Pin_list =
+--   { maddr: List Maddr }
+
+
+type alias Ipfs_answer = String
+
 type Msg
   = Searchfield_msg String
   | Action_switch Action
@@ -57,8 +71,9 @@ type Msg
   | Ipfs_add Maddr
   | Ipfs_pin Maddr
   | Ipfs_pin_ls Maddr
+  | Ipfs_dag_get Maddr
   -- | Ipfs_cmd Ipfs_action
-  | Ipfs_answer Files
+  | Ipfs_msg Ipfs_answer
 
   -- | Ipfs_add Bool
 

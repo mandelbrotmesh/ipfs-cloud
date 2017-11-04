@@ -27,12 +27,12 @@ stylesheet =
     , Style.style Menustyle
         [ --Color.text darkGrey
           Color.background (Color.rgba 240 40 40 1)
-        , Shadow.box
-            { offset = ( 0, 3 )
-            , size = 3
-            , blur = 2
-            , color = (Color.rgba  80 80 80 1)
-            }
+        -- , Shadow.box
+        --     { offset = ( 0, 3 )
+        --     , size = 3
+        --     , blur = 2
+        --     , color = (Color.rgba  80 80 80 1)
+        --     }
         ]
     , Style.style Menubuttonstyle
         [ Color.background (Color.rgba 0 0 0 0)
@@ -53,11 +53,11 @@ stylesheet =
         ]
     , Style.style Filestyle
         [ Color.background white
-        , Shadow.box
-            { offset = ( 0, 3 )
-            , size = 3
-            , blur = 2
-            , color = (Color.rgba  80 80 80 1)
-            }
+        -- , Shadow.box
+        --     { offset = ( 0, 3 )
+        --     , size = 3
+        --     , blur = 2
+        --     , color = (Color.rgba  80 80 80 1)
+        --     }
         ]
     ]

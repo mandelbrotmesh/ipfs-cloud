@@ -6,7 +6,8 @@ import Element exposing (..)
 import Element.Attributes exposing (..)
 import Element.Input as Input
 import Element.Events exposing (..)
-
+import Dict exposing (Dict, get)
+import Json.Decode exposing (..)
 import Html
 import Html.Attributes as Hattr
 -- import Html.Events exposing (..)
@@ -89,13 +90,13 @@ mainview model =
     ]
 
 
-browser : Types.Files -> Element Styles variation Msg
-browser files =
+browser : Types.Ipld_node -> Element Styles variation Msg
+browser ipld_node =
   el Browserstyle
     [ width fill, height fill]
     ( row None
-        [ width fill, height fill, padding 20, spacing 10, spread]
-        ( List.concatMap file_view files )
+        [ width fill, height fill, padding 20, spacing 10]
+        ( List.concatMap file_view (parse_ipld_rec ipld_node) )
     )
   -- grid MyGridStyle [ --attributes
   --                 ]
@@ -152,12 +153,13 @@ show_img maddr =
 audio_player : Types.Maddr -> Element Styles variation Msg
 audio_player maddr =
   el None
-    []
+    [ width fill ]
     ( html ( Html.audio
         [ Hattr.src (maddrtourl maddr)
         , Hattr.controls True
         , Hattr.style
           [ ("width", "100vw")
+          , ("overflow-x", "hidden")
           ]
         ]
         [])
@@ -166,19 +168,23 @@ audio_player maddr =
 video_player : Types.Maddr -> Element Styles variation Msg
 video_player maddr =
   el None
-    []
+    [ width fill ]
     ( html ( Html.video
         [ Hattr.src (maddrtourl maddr)
         , Hattr.controls True
         , Hattr.style
             [ ("width", "100vw")
+            , ("height", "calc(100vmin - 60px)")
+            , ("backgroundColor", "rgba(3, 3, 3, 1)")
+            , ("overflow-x", "hidden")
             ]
         ]
         [])
     )
 
-file_view : Types.File -> List (Element Styles variaion Msg)
-file_view file =
+
+file_view : Types.Cid_rec -> List (Element Styles variaion Msg)
+file_view dag_node =
   [ el Filestyle
       [ width (px 120), height (px 180), padding 5 ]
       ( column None
@@ -186,12 +192,12 @@ file_view file =
           [ row None
               [ width fill, alignRight]
               [ image None
-                  [ width (px 20), height (px 20), onClick (Ipfs_pin file.maddr) ]
-                  { src =
-                      if file.ispinned == False then
-                        (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_border_24px.svg")
-                      else
-                        (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
+                  [ width (px 20), height (px 20), onClick (Ipfs_pin (.cid dag_node) ) ]--file.maddr) ]
+                  { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
+                      -- if file.ispinned == False then
+                      --   (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_border_24px.svg")
+                      -- else
+                      --   (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
 
                   , caption = "pin_content"
                   }
@@ -203,8 +209,8 @@ file_view file =
 
               ]
           , image None
-              [ width fill, height (px 100), onClick (Action_switch ( play file )) ]
-              { src = (Utils.filesymbol file)
+              [ width fill, height (px 100)] --, onClick (Action_switch ( play file )) ]
+              { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg") --(Utils.filesymbol file)
               , caption = "play_file"
               }
           , html
@@ -219,7 +225,7 @@ file_view file =
                       , ("word-break", "break-all" )
                       ]
                   ]
-                  [ Html.text (.maddr file) ]
+                  [ Html.text (.name dag_node) ] --(.maddr file) ]
               )
           -- , paragraph None
           --     [ width fill, height (px 50)]

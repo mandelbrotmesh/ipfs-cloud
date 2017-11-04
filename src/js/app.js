@@ -23,7 +23,7 @@ const Ipfs = require('ipfs')
 const Room = require('ipfs-pubsub-room')
 
 let node
-let peerInfo
+let peerId
 
 
 // var account =
@@ -56,6 +56,8 @@ let peerInfo
 // }
 
 
+
+
 function start () {
   if (!node) {
     console.log('node starts');
@@ -81,7 +83,7 @@ function start () {
 
     node.on('start', () => {
       node.id().then((id) => {
-        peerInfo = id
+        peerId = id
         updateView('ready', node)
         // const room = Room(node, "ipfs-cloud")
         // setInterval(refreshPeerList, 1000)
@@ -111,6 +113,8 @@ function createFileBlob (data, multihash) {
                 return 'video/mp4'
             case '4F676753':
                 return 'audio/ogg'
+            case '20202020':
+                return 'inode/directory'
             default:
                 return 'Unknown filetype'
         }
@@ -365,7 +369,7 @@ function onDragExit () {
 
 const states = {
   ready: () => {
-    const addressesHtml = peerInfo.addresses.map((address) => {
+    const addressesHtml = peerId.addresses.map((address) => {
       return '<li><span class="address">' + address + '</span></li>'
     }).join('')
 
@@ -433,6 +437,11 @@ app.ports.ipfs_cmd.subscribe(
         break;
       case "pin_ls":
         console.log("port " + msg);
+        break;
+      case "dag_get":
+        console.log("port " + msg);
+        answer = node.dag.get(msg)
+        app.ports.ipfs_answer.send(answer)
         break;
       // default:
 

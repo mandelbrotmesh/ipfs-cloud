@@ -1030,7 +1030,7 @@ cids@^0.4.2:
     multicodec "~0.1.7"
     multihashes "~0.4.4"
 
-cids@^0.5.0, cids@^0.5.1, cids@~0.5.0, cids@~0.5.1, cids@~0.5.2:
+cids@^0.5.0, cids@^0.5.1, cids@^0.5.2, cids@~0.5.0, cids@~0.5.1, cids@~0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/cids/-/cids-0.5.2.tgz#c1baf306f8165baaabfb5134b5c20a50450548a6"
   dependencies:

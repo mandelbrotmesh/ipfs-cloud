@@ -6,10 +6,10 @@ import Ports exposing (..)
 
 model : Types.Model
 model =
-  { action = Browsing [ {maddr = "Qma7cGNxVCVHwcjzYzDgR34hPxeSg1FsFHUNk1ytz8XASY", mime = "inode/directory", ispinned = False}
-                      , {maddr = "QmTca4A43f4kEvzTouvYTegtp6KobixRqweV12NrvwwtFP", mime = "video/mp4", ispinned = False}
-                      , {maddr = "QmaMc3URC5Jqt3HrfP2beBkB56Y232YUqR3itguzup91je", mime = "audio/ogg", ispinned = False}
-                      ]
+  { action = Browsing "" --[] --[ {maddr = "Qma7cGNxVCVHwcjzYzDgR34hPxeSg1FsFHUNk1ytz8XASY", mime = "inode/directory", ispinned = False}
+                      -- , {maddr = "QmTca4A43f4kEvzTouvYTegtp6KobixRqweV12NrvwwtFP", mime = "video/mp4", ispinned = False}
+                      -- , {maddr = "QmaMc3URC5Jqt3HrfP2beBkB56Y232YUqR3itguzup91je", mime = "audio/ogg", ispinned = False}
+                      -- ]
   , searchfield = ""
   , files = []
   }
@@ -39,9 +39,11 @@ update msg model =
       (model, ipfs_cmd {action= "pin", maddr= msg})
     Ipfs_pin_ls msg ->
       (model, ipfs_cmd {action= "pin_ls", maddr= msg})
+    Ipfs_dag_get msg ->
+      (model, ipfs_cmd {action= "dag_get", maddr= msg})
     -- Ipfs_cmd msg ->
     --   (model, ipfs_cmd_send msg )
-    Ipfs_answer msg ->
+    Ipfs_msg msg ->
       ( { model | action = Browsing(msg) }, Cmd.none )
 
     -- Acc_submit_msg msg ->
@@ -53,6 +55,6 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  ipfs_answer Ipfs_answer
+  ipfs_answer Ipfs_msg
   -- Sub.batch
   --   [ ipfs_answer Ipfs_answer ]
