@@ -3,10 +3,11 @@ module State exposing (..)
 import Types exposing (..)
 -- import MimeType exposing (..)
 import Ports exposing (..)
+import Utils exposing (..)
 
 model : Types.Model
 model =
-  { action = Browsing "" --[] --[ {maddr = "Qma7cGNxVCVHwcjzYzDgR34hPxeSg1FsFHUNk1ytz8XASY", mime = "inode/directory", ispinned = False}
+  { action = Showing_img "QmUDhFjiVkHaQUvsViPm6ueM4WuV9ZeRm9JVnGD13ec9zS" --[] --[ {maddr = "Qma7cGNxVCVHwcjzYzDgR34hPxeSg1FsFHUNk1ytz8XASY", mime = "inode/directory", ispinned = False}
                       -- , {maddr = "QmTca4A43f4kEvzTouvYTegtp6KobixRqweV12NrvwwtFP", mime = "video/mp4", ispinned = False}
                       -- , {maddr = "QmaMc3URC5Jqt3HrfP2beBkB56Y232YUqR3itguzup91je", mime = "audio/ogg", ispinned = False}
                       -- ]
@@ -44,7 +45,7 @@ update msg model =
     -- Ipfs_cmd msg ->
     --   (model, ipfs_cmd_send msg )
     Ipfs_msg msg ->
-      ( { model | action = Browsing(msg) }, Cmd.none )
+      ( { model | action = Browsing( Utils.dag_json_to_dag_node msg )  }, Cmd.none )
 
     -- Acc_submit_msg msg ->
     --   ( model, acc_submit msg )

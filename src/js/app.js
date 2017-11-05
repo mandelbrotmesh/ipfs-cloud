@@ -422,26 +422,29 @@ app.ports.ipfs_cmd.subscribe(
   function handle_action(msg) {
     switch (msg['action']) {
       case "cat":
-        console.log("port " + msg);
-        getFile(msg['maddr'])
+        console.log("port cat " + msg);
+        // getFile(msg['maddr'])
         break;
       case "get":
-        console.log("port " + msg);
+        console.log("port get " + msg);
         break;
       case "add":
-        console.log("port " + msg);
+        console.log("port add" + msg);
         $upbtn.click();
         break;
       case "pin":
-        console.log("port " + msg);
+        console.log("port pin" + msg);
         break;
       case "pin_ls":
-        console.log("port " + msg);
+        console.log("port pin ls" + msg);
         break;
       case "dag_get":
-        console.log("port " + msg);
-        answer = node.dag.get(msg)
-        app.ports.ipfs_answer.send(answer)
+        console.log("port dag_get " + msg['maddr']);
+        node.dag.get(msg['maddr'], function (err, answer) {
+          console.log(JSON.stringify(answer['value']));
+
+        app.ports.ipfs_answer.send(JSON.stringify(answer['value']))
+        })
         break;
       // default:
 

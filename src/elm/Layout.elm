@@ -50,7 +50,7 @@ menu model =
                     , options = []
                     }
                 , button Searchbarbuttonstyle
-                    [ width (px 40), height (px 40), onClick (Types.Ipfs_cat model.searchfield) ]
+                    [ width (px 40), height (px 40), onClick (Types.Ipfs_dag_get model.searchfield) ]
                     ( image None
                         [ width (px 40), height (px 40) ]
                         { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg")
@@ -61,7 +61,7 @@ menu model =
             , button Menubuttonstyle
                 [ width (px 40), height (px 40) ]
                 ( image None
-                    [ width (px 40), height (px 40) ]
+                    [ width (px 40), height (px 40), onClick (Ipfs_add "bla") ]
                     { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_file_upload_48px.svg")
                     , caption = "upload_file"
                     }
@@ -79,8 +79,8 @@ mainview model =
     [ width fill, height fill ]
     [ el None [ width fill, height (px 60) ] ( empty )
     , case model.action of
-        Browsing files ->
-          browser files
+        Browsing dag_node ->
+          browser dag_node
         Showing_img maddr->
           show_img maddr
         Playing_audio maddr ->
@@ -90,13 +90,13 @@ mainview model =
     ]
 
 
-browser : Types.Ipld_node -> Element Styles variation Msg
-browser ipld_node =
+browser : Types.Dag_node -> Element Styles variation Msg
+browser dag_node =
   el Browserstyle
     [ width fill, height fill]
     ( row None
         [ width fill, height fill, padding 20, spacing 10]
-        ( List.concatMap file_view (parse_ipld_rec ipld_node) )
+        ( List.concatMap file_view (.links dag_node) )
     )
   -- grid MyGridStyle [ --attributes
   --                 ]
@@ -183,8 +183,8 @@ video_player maddr =
     )
 
 
-file_view : Types.Cid_rec -> List (Element Styles variaion Msg)
-file_view dag_node =
+file_view : Types.Dag_link -> List (Element Styles variaion Msg)
+file_view dag_link =
   [ el Filestyle
       [ width (px 120), height (px 180), padding 5 ]
       ( column None
@@ -192,7 +192,7 @@ file_view dag_node =
           [ row None
               [ width fill, alignRight]
               [ image None
-                  [ width (px 20), height (px 20), onClick (Ipfs_pin (.cid dag_node) ) ]--file.maddr) ]
+                  [ width (px 20), height (px 20), onClick (Ipfs_pin (.multihash dag_link) ) ]--file.maddr) ]
                   { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
                       -- if file.ispinned == False then
                       --   (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_border_24px.svg")
@@ -225,7 +225,7 @@ file_view dag_node =
                       , ("word-break", "break-all" )
                       ]
                   ]
-                  [ Html.text (.name dag_node) ] --(.maddr file) ]
+                  [ Html.text (.name dag_link) ] --(.maddr file) ]
               )
           -- , paragraph None
           --     [ width fill, height (px 50)]

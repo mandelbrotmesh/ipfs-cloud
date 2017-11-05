@@ -54,19 +54,37 @@ parse_ipld_json ipld_node =
     Ok val -> val
     Err val -> []
 
-parse_ipld_rec : Types.Ipld_node -> List Types.Cid_rec --[Dict.fromList [(bla)]]
-parse_ipld_rec ipld_node =
-  List.map3
-    (\a b c -> {cid = a, name = b, size = c})
-    (case (decodeString (field "links" (list (field "Cid" (field "/" (string)) ))) ipld_node) of
-      Ok val -> val
-      Err val -> [""])
+--QmS4ustL54uo8FzR9455qaxZwuMiUhyvMcX9Ba8nUH4uVv
 
-    (case (decodeString (field "links" (list (field "Name" (string) ))) ipld_node) of
+dag_json_to_dag_node : Types.Ipld_node -> Types.Dag_node --[Dict.fromList [(bla)]]
+dag_json_to_dag_node ipld_node =
+  { data = []
+  , multihash =
+      case (decodeString (field "multihash" (string)) ipld_node) of
+        Ok val -> val
+        Err val -> "mhash_err"
+  , links = (dag_json_to_dag_links ipld_node)
+  , size =
+      case (decodeString (field "size" (int)) ipld_node) of
+        Ok val -> val
+        Err val -> 0
+  }
+
+
+
+dag_json_to_dag_links : Types.Ipld_node -> List Types.Dag_link --[Dict.fromList [(bla)]]
+dag_json_to_dag_links ipld_node =
+  List.map3
+    (\a b c -> {name = a, multihash = b, size = c})
+    (case (decodeString (field "links" (list (field "name" (string) ))) ipld_node) of
       Ok val -> val
-      Err val -> [""]
+      Err val -> ["name_err"]
     )
-    (case (decodeString (field "links" (list (field "Size" int ))) ipld_node) of
+    (case (decodeString (field "links" (list (field "multihash" (string)) )) ipld_node) of
+      Ok val -> val
+      Err val -> ["mhash_err_link"])
+
+    (case (decodeString (field "links" (list (field "size" int ))) ipld_node) of
       Ok val -> val
       Err val -> [0]
     )

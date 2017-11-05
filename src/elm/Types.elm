@@ -44,7 +44,7 @@ type alias Files =
   List File
 
 type Action
-  = Browsing Ipld_node --Files
+  = Browsing Dag_node --Files
   | Showing_img Maddr
   | Playing_audio Maddr
   | Playing_video Maddr
@@ -61,6 +61,18 @@ type alias Ipld_node = String
 -- type alias Pin_list =
 --   { maddr: List Maddr }
 
+type alias Dag_link =
+  { name : String
+  , multihash : Maddr
+  , size : Int
+  }
+
+type alias Dag_node =
+  { data : List Int
+  , links : List Dag_link
+  , multihash : Maddr
+  , size : Int
+  }
 
 type alias Ipfs_answer = String
 
