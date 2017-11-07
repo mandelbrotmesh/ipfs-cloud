@@ -6,6 +6,7 @@ require('../index.html')
 const $dragoverPopup = document.querySelector('.dragover-popup')
 const $body = document.querySelector('body')
 
+// var protobuf = require('protobufjs')
 // var cryptojs = require('crypto-js')
 
 
@@ -15,12 +16,15 @@ var app = Elm.Main.embed(mountNode)
 
 
 
-
 const streamBuffers = require('stream-buffers')
 const Ipfs = require('ipfs')
 // const ipfsApi = require('ipfsApi')
 
 const Room = require('ipfs-pubsub-room')
+// const CID = require('cids')
+// const multicodec = require('multicodec')
+// const multibase = require('multibase')
+var protobuf = require('protobufjs')
 
 let node
 let peerId
@@ -92,9 +96,12 @@ function start () {
   }
 }
 
-function createFileBlob (data, multihash) {
+function createFileBlob (data, multihash, wanttype) {
   const file = new window.Blob(data, {type: 'application/octet-binary'})
   const fileUrl = window.URL.createObjectURL(file)
+  console.log(fileUrl);
+  console.log(wanttype);
+  app.ports.ipfs_answer.send({answertype: wanttype, value: fileUrl})
   var mime = "";
   const getMimetype = (signature) => {
         switch (signature) {
@@ -136,16 +143,17 @@ function createFileBlob (data, multihash) {
 
     mime = getMimetype(header)
 
-    var answer = [{"maddr": multihash, "mime": mime, "ispinned": true}] //listItem
+    var answer = {"maddr": multihash, "mime": mime, "ispinned": true} //listItem
     console.log(answer);
-    app.ports.ipfs_answer.send(answer)
+    // app.ports.ipfs_asset.send(answer)
+    // app.ports.ipfs_asset.send({answertype: "audio answer", value: fileUrl})
 
 }
 fileReader.readAsArrayBuffer(blob);
 
 }
 
-function getFile (multihash) {
+function getFile (multihash, wanttype) {
   //const multihash = ""
 
   if (!multihash) {
@@ -168,7 +176,7 @@ function getFile (multihash) {
         // buffer up all the data in the file
         file.content.on('data', (data) => buf.push(data))
         file.content.once('end', () => {
-          createFileBlob(buf, multihash)
+          createFileBlob(buf, multihash, wanttype)
           // console.log(item);
         })
         file.content.resume()
@@ -266,7 +274,7 @@ function upload (files){
             }
 
             stream.write({
-              path: file.name,
+              path: ('myapp/' + file.name),
               content: myReadableStreamBuffer
             })
 
@@ -370,6 +378,7 @@ function onDragExit () {
 const states = {
   ready: () => {
     const addressesHtml = peerId.addresses.map((address) => {
+      console.log(address);
       return '<li><span class="address">' + address + '</span></li>'
     }).join('')
 
@@ -423,7 +432,7 @@ app.ports.ipfs_cmd.subscribe(
     switch (msg['action']) {
       case "cat":
         console.log("port cat " + msg);
-        // getFile(msg['maddr'])
+        getFile(msg['maddr'], msg['wanttype'])
         break;
       case "get":
         console.log("port get " + msg);
@@ -436,14 +445,34 @@ app.ports.ipfs_cmd.subscribe(
         console.log("port pin" + msg);
         break;
       case "pin_ls":
-        console.log("port pin ls" + msg);
+        console.log("port pin_ls" + msg);
         break;
+      // case "cid_to_codec":
+      //   console.log("port cid_to_codec" + msg);
+      //   var cid = new CID(1, 'dag-pb', multihash)
+      //   app.ports.ipfs_asset.send(cid.codec)
+      //   break;
       case "dag_get":
         console.log("port dag_get " + msg['maddr']);
-        node.dag.get(msg['maddr'], function (err, answer) {
-          console.log(JSON.stringify(answer['value']));
+        node.dag.get(msg['maddr'], function (err, val) {
+          if(err != undefined)
+          {throw new Error("dag get err")}
+          else if (typeof err == 'string')
+          {throw new Error('dag get err')}
+          console.log(val);
+          console.log((val['value']['data']));
+          // getFile(msg['maddr'])
 
-        app.ports.ipfs_answer.send(JSON.stringify(answer['value']))
+          // const cid = multibase.decode(version)
+          // version = parseInt(cid.slice(0, 1).toString('hex'), 16)
+          // codec = multicodec.getCodec(cid.slice(1))
+          // multihash = multicodec.rmPrefix(cid.slice(1))
+
+          // var codec = (val['value']['multihash']).slice(1))
+          // var cid = new CID(val['value']['multihash'])
+          // console.log(cid.codec);
+          var answer = JSON.stringify(val['value'])
+        app.ports.ipfs_answer.send({answertype: "dag answer", value: answer})
         })
         break;
       // default:
@@ -455,6 +484,7 @@ app.ports.ipfs_cmd.subscribe(
     // getFile(multihashstr)
   }
 )
+
 
 
 // app.ports.ipfs_pin_ls.subscribe(
@@ -470,3 +500,18 @@ app.ports.ipfs_cmd.subscribe(
 //   $('input[type="file"]').click();
 //   }
 // )
+
+
+
+
+//<12 20 e3 b0 c4 42 98 fc 1c 14 9a fb f4 c8 99 6f b9 24 27 ae 41 e4 64 9b 93 4c a4 95 99 1b 78 52 b8 55>
+// node.object.get('QmS4ustL54uo8FzR9455qaxZwuMiUhyvMcX9Ba8nUH4uVv', function(err,val){
+//   console.log(val['data'])
+// })
+
+//QmUDhFjiVkHaQUvsViPm6ueM4WuV9ZeRm9JVnGD13ec9zS
+// dagpb.util.deserialize(val['value']['data'], function(err,v2){
+//   console.log(v2);
+// })
+
+//

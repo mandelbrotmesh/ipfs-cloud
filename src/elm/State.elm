@@ -33,19 +33,24 @@ update msg model =
     Searchfield_msg msg ->
       ( {model | searchfield = msg}, Cmd.none )
     Ipfs_cat msg ->
-      (model, ipfs_cmd {action = "cat", maddr = model.searchfield} )
+      (model, ipfs_cmd {action = "cat", maddr = .maddr msg, wanttype = Just (.wanttype msg)} )
     Ipfs_add msg ->
-      (model, ipfs_cmd {action= "add", maddr= msg})
+      (model, ipfs_cmd {action= "add", maddr= msg, wanttype = Nothing})
     Ipfs_pin msg ->
-      (model, ipfs_cmd {action= "pin", maddr= msg})
+      (model, ipfs_cmd {action= "pin", maddr= msg, wanttype = Nothing})
     Ipfs_pin_ls msg ->
-      (model, ipfs_cmd {action= "pin_ls", maddr= msg})
+      (model, ipfs_cmd {action= "pin_ls", maddr= msg, wanttype = Nothing})
     Ipfs_dag_get msg ->
-      (model, ipfs_cmd {action= "dag_get", maddr= msg})
+      (model, ipfs_cmd {action= "dag_get", maddr= msg, wanttype = Nothing})
     -- Ipfs_cmd msg ->
     --   (model, ipfs_cmd_send msg )
     Ipfs_msg msg ->
-      ( { model | action = Browsing( Utils.dag_json_to_dag_node msg )  }, Cmd.none )
+      ( { model | action = Utils.decide msg}, Cmd.none)
+
+-- Browsing (Utils.dag_json_to_dag_node msg)
+
+    -- Ipfs_asset_msg msg ->
+    --   ( { model | action = Playing_audio msg }, Cmd.none)
 
     -- Acc_submit_msg msg ->
     --   ( model, acc_submit msg )
@@ -56,6 +61,8 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  ipfs_answer Ipfs_msg
-  -- Sub.batch
-  --   [ ipfs_answer Ipfs_answer ]
+  Sub.batch
+    [ ipfs_answer Ipfs_msg
+    -- , ipfs_asset Ipfs_asset_msg
+    ]
+    -- ipfs_answer Ipfs_msg

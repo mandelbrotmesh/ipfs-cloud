@@ -7,7 +7,6 @@ import Types exposing (..)
 
 port ipfs_cmd : Types.Ipfs_cmd -> Cmd msg
 port ipfs_answer : (Types.Ipfs_answer -> msg) -> Sub msg -- (List Types.File -> msg) -> Sub msg
-
-
+-- port ipfs_asset : (String -> msg) -> Sub msg
 -- port acc_submit : String -> Cmd msg
 -- port ipfs_add : Bool -> Cmd msg

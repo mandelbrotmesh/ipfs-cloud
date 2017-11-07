@@ -96,8 +96,42 @@ browser dag_node =
     [ width fill, height fill]
     ( row None
         [ width fill, height fill, padding 20, spacing 10]
-        ( List.concatMap file_view (.links dag_node) )
+        ( ( file_view(dag_node_to_file dag_node) )
+          ::( dag_links_file_view (.links dag_node))
+        )
     )
+
+dag_node_to_file : Types.Dag_node -> Types.File
+dag_node_to_file dag_node =
+  { multihash = .multihash dag_node
+  , name = "idk.ogg"
+  , mime = "audio/ogg"
+  , pinnedby = [""]
+  , action = open
+    { name = "idk.ogg"
+    , multihash = (.multihash dag_node)
+    }
+  }
+
+dag_links_file_view : List Types.Dag_link -> List (Element Styles variation Msg)
+dag_links_file_view dag_links =
+  List.map file_view (List.map dag_link_to_file dag_links)
+  -- List.concatMap (\f -> [file_view f])
+  -- (List.map dag_link_to_file dag_links)
+  --
+
+
+dag_link_to_file : Types.Dag_link -> Types.File
+dag_link_to_file dag_link =
+  { multihash = .multihash dag_link
+  , name = .name dag_link
+  , mime = "image/jpg"
+  , pinnedby = [""]
+  , action = open
+      { name = (.name dag_link)
+      , multihash = (.multihash dag_link)
+      }
+  }
   -- grid MyGridStyle [ --attributes
   --                 ]
   --   { columns = [ px 180, px 180, px 180, px 180 ]
@@ -155,7 +189,7 @@ audio_player maddr =
   el None
     [ width fill ]
     ( html ( Html.audio
-        [ Hattr.src (maddrtourl maddr)
+        [ Hattr.src maddr --(maddrtourl maddr)
         , Hattr.controls True
         , Hattr.style
           [ ("width", "100vw")
@@ -182,54 +216,105 @@ video_player maddr =
         [])
     )
 
+file_view : Types.File -> Element Styles vatiation Msg
+file_view file =
+  el Filestyle
+    [ width (px 120), height (px 180), padding 5 ]
+    ( column None
+        [ width fill, height fill]
+        [ row None
+            [ width fill, alignRight]
+            [ image None
+                [ width (px 20), height (px 20), onClick (Ipfs_pin (.multihash file) ) ]--file.maddr) ]
+                { src = --(maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
+                    if file.pinnedby == [""] then
+                      (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_border_24px.svg")
+                    else
+                      (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
 
-file_view : Types.Dag_link -> List (Element Styles variaion Msg)
-file_view dag_link =
-  [ el Filestyle
-      [ width (px 120), height (px 180), padding 5 ]
-      ( column None
-          [ width fill, height fill]
-          [ row None
-              [ width fill, alignRight]
-              [ image None
-                  [ width (px 20), height (px 20), onClick (Ipfs_pin (.multihash dag_link) ) ]--file.maddr) ]
-                  { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
-                      -- if file.ispinned == False then
-                      --   (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_border_24px.svg")
-                      -- else
-                      --   (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
+                , caption = "pin_content"
+                }
+            ,  image None
+                [ width (px 20), height (px 20) ]
+                { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_more_vert_48px.svg")
+                , caption = "more_options"
+                }
 
-                  , caption = "pin_content"
-                  }
-              ,  image None
-                  [ width (px 20), height (px 20) ]
-                  { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_more_vert_48px.svg")
-                  , caption = "more_options"
-                  }
+            ]
+        , image None
+            [ width fill, height (px 100), onClick (.action file) ] --onClick (open (.maddr file))] --, onClick (Action_switch ( play file )) ]
+            { src = Utils.filesymbol file --(.multihash file) --(maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
+            , caption = "play_file"
+            }
+        , html
+            ( Html.p
+                [ Hattr.style
+                    [ ("overflow-x", "hidden")
+                    , ("overflow-y", "ellipsis")
+                    , ("text-overflow", "ellipsis")
+                    , ("max-height", "50px")
+                    , ("width", "110px")
+                    , ("margin", "0")
+                    , ("word-break", "break-all" )
+                    ]
+                ]
+                [ Html.text (.name file) ] --(.maddr file) ]
+            )
+        -- , paragraph None
+        --     [ width fill, height (px 50)]
+        --     [ text (.maddr file) ]
+        ]
+    )
 
-              ]
-          , image None
-              [ width fill, height (px 100)] --, onClick (Action_switch ( play file )) ]
-              { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg") --(Utils.filesymbol file)
-              , caption = "play_file"
-              }
-          , html
-              ( Html.p
-                  [ Hattr.style
-                      [ ("overflow-x", "hidden")
-                      , ("overflow-y", "ellipsis")
-                      , ("text-overflow", "ellipsis")
-                      , ("max-height", "50px")
-                      , ("width", "110px")
-                      , ("margin", "0")
-                      , ("word-break", "break-all" )
-                      ]
-                  ]
-                  [ Html.text (.name dag_link) ] --(.maddr file) ]
-              )
-          -- , paragraph None
-          --     [ width fill, height (px 50)]
-          --     [ text (.maddr file) ]
-          ]
-      )
-  ]
+
+
+-- file_view : Types.Dag_link -> List (Element Styles variation Msg)
+-- file_view dag_link =
+--   [ el Filestyle
+--       [ width (px 120), height (px 180), padding 5 ]
+--       ( column None
+--           [ width fill, height fill]
+--           [ row None
+--               [ width fill, alignRight]
+--               [ image None
+--                   [ width (px 20), height (px 20), onClick (Ipfs_pin (.multihash dag_link) ) ]--file.maddr) ]
+--                   { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
+--                       -- if file.ispinned == False then
+--                       --   (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_border_24px.svg")
+--                       -- else
+--                       --   (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
+--
+--                   , caption = "pin_content"
+--                   }
+--               ,  image None
+--                   [ width (px 20), height (px 20) ]
+--                   { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_more_vert_48px.svg")
+--                   , caption = "more_options"
+--                   }
+--
+--               ]
+--           , image None
+--               [ width fill, height (px 100), onClick (open dag_link)] --, onClick (Action_switch ( play file )) ]
+--               { src = maddrtourl (Utils.filesymbol dag_link) --(maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg") --(Utils.filesymbol file)
+--               , caption = "play_file"
+--               }
+--           , html
+--               ( Html.p
+--                   [ Hattr.style
+--                       [ ("overflow-x", "hidden")
+--                       , ("overflow-y", "ellipsis")
+--                       , ("text-overflow", "ellipsis")
+--                       , ("max-height", "50px")
+--                       , ("width", "110px")
+--                       , ("margin", "0")
+--                       , ("word-break", "break-all" )
+--                       ]
+--                   ]
+--                   [ Html.text (.name dag_link) ] --(.maddr file) ]
+--               )
+--           -- , paragraph None
+--           --     [ width fill, height (px 50)]
+--           --     [ text (.maddr file) ]
+--           ]
+--       )
+--   ]

@@ -16,36 +16,62 @@ get_mediatype mime =
     Just val -> val
     Nothing -> "a"
 
-filesymbol : Types.File -> String
+-- filesymbol : Types.File -> String
+-- filesymbol file =
+--   if file.mime == "Unknown filetype" then
+--     maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
+--   else if file.mime == "inode/directory" then
+--     maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+--   else if (get_mediatype file.mime) == "image" then
+--     maddrtourl file.maddr
+--   else if (get_mediatype file.mime) == "audio" then
+--     maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
+--   else if (get_mediatype file.mime) == "video" then
+--     maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/notification/svg/production/ic_ondemand_video_48px.svg"
+--   else
+--     maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
+--     --maddrtourl file.maddr
+
+filesymbol : Types.File -> Maddr
 filesymbol file =
-  if file.mime == "Unknown filetype" then
-    maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
-  else if file.mime == "inode/directory" then
-    maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
-  else if (get_mediatype file.mime) == "image" then
-    maddrtourl file.maddr
-  else if (get_mediatype file.mime) == "audio" then
+  if String.slice -4 -0 (.name file) == ".ogg" then
     maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
-  else if (get_mediatype file.mime) == "video" then
-    maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/notification/svg/production/ic_ondemand_video_48px.svg"
   else
-    maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/alert/svg/production/ic_error_48px.svg"
-    --maddrtourl file.maddr
+    maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+
+decide : Types.Ipfs_answer -> Types.Action
+decide ipfs_answer =
+  if (.answertype ipfs_answer) == "audio answer" then
+    Playing_audio (.value ipfs_answer)
+  else if (.answertype ipfs_answer) == "image answer" then
+    Showing_img (.value ipfs_answer)
+  else if (.answertype ipfs_answer) == "video answer" then
+    Playing_video (.value ipfs_answer)
+  else
+    Browsing (dag_json_to_dag_node (.value ipfs_answer))
+
+
+open : {name: String, multihash: String} -> Types.Msg
+open file =
+  if String.slice -5 -1 ((.name file) ++ "a") == ".ogg" then
+    Ipfs_cat {maddr = .multihash file, wanttype = "audio answer"}
+  else
+    Ipfs_dag_get (.multihash file)
 
 -- play : Types.File -> Types.Action
 -- play file =
---   if file.mime == "Unknown filetype" then
---     Browsing [file]
---   else if file.mime == "inode/directory" then
---     Browsing [file]
---   else if (get_mediatype file.mime) == "image" then
+--   -- if file.mime == "Unknown filetype" then
+--   --   Browsing [file]
+--   -- else if file.mime == "inode/directory" then
+--   --   Browsing [file]
+--   if (get_mediatype file.mime) == "image" then
 --     Showing_img file.maddr
 --   else if (get_mediatype file.mime) == "audio" then
 --     Playing_audio file.maddr
---   else if (get_mediatype file.mime) == "video" then
+--   else --(get_mediatype file.mime) == "video" then
 --     Playing_video file.maddr
---   else
---     Browsing [file]
+--   -- else
+--   --   Browsing [file]
 
 
 parse_ipld_json : Types.Ipld_node -> List (Dict String Value) --[Dict.fromList [(bla)]]
@@ -69,7 +95,6 @@ dag_json_to_dag_node ipld_node =
         Ok val -> val
         Err val -> 0
   }
-
 
 
 dag_json_to_dag_links : Types.Ipld_node -> List Types.Dag_link --[Dict.fromList [(bla)]]

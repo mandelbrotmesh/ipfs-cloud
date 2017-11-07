@@ -26,8 +26,13 @@
     "ipfs": "^0.26.0",
     "ipfs-api": "^15.0.1",
     "ipfs-pubsub-room": "^0.3.0",
+    "ipfs-unixfs": "^0.1.13",
+    "ipld-dag-pb": "^0.11.2",
     "material-design-icons": "^3.0.1",
     "mmmagic": "^0.4.5",
+    "multibase": "^0.3.4",
+    "multicodec": "^0.2.5",
+    "protobufjs": "^6.8.0",
     "stream-buffers": "^3.0.1"
   }
 }
