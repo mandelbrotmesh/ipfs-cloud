@@ -10,12 +10,24 @@ maddrtourl : Maddr -> String
 maddrtourl maddr =
   "https://ipfs.io/ipfs/" ++ maddr
 
-get_mediatype : String -> String
-get_mediatype mime =
-  case List.head (String.split "/" mime ) of
-    Just val -> val
-    Nothing -> "a"
+-- get_mediatype : String -> String
+-- get_mediatype mime =
+--   case List.head (String.split "/" mime ) of
+--     Just val -> val
+--     Nothing -> "a"
 
+get_mediatype : String -> Mediatype
+get_mediatype name =
+  if (String.right 4 name) == ".jpg" then
+    Image
+  else if (String.right 4 name) == ".ogg" then
+    Audio
+  else if (String.right 4 name) == ".mp4" then
+    Video
+  else if (String.right 4 name) == ".txt" then
+    Text
+  else
+    Folder
 -- filesymbol : Types.File -> String
 -- filesymbol file =
 --   if file.mime == "Unknown filetype" then
@@ -34,29 +46,83 @@ get_mediatype mime =
 
 filesymbol : Types.File -> Maddr
 filesymbol file =
-  if String.slice -4 -0 (.name file) == ".ogg" then
-    maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
-  else
-    maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+  case (.mediatype file) of
+    Audio ->
+      maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
+    _ ->
+      maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+
+  -- if String.right 4 (.mediatype file) == "audio" then
+  --   maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
+  -- else
+  --   maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+
+--
+-- type Mediatype
+--   = Folder
+--   | Link
+--   | Image
+--   | Audio
+--   | Video
+--   | Text
+
+
+dag_node_to_file : Types.Dag_node -> Types.File
+dag_node_to_file dag_node =
+  { multihash = .multihash dag_node
+  , name = "idk.ogg"
+  , mediatype = Folder
+  , pinnedby = [""]
+  }
+
+dag_link_to_file : Types.Dag_link -> Types.File
+dag_link_to_file dag_link =
+  { multihash = .multihash dag_link
+  , name = .name dag_link
+  , mediatype = get_mediatype (.name dag_link)
+  , pinnedby = [""]
+  }
 
 decide : Types.Ipfs_answer -> Types.Action
 decide ipfs_answer =
-  if (.answertype ipfs_answer) == "audio answer" then
-    Playing_audio (.value ipfs_answer)
-  else if (.answertype ipfs_answer) == "image answer" then
+  if (.answertype ipfs_answer) == "image answer" then
     Showing_img (.value ipfs_answer)
+  else if (.answertype ipfs_answer) == "audio answer" then
+    Playing_audio (.value ipfs_answer)
   else if (.answertype ipfs_answer) == "video answer" then
     Playing_video (.value ipfs_answer)
+  else if (.answertype ipfs_answer) == "text answer" then
+    Viewing_text (.value ipfs_answer)
+  else if (.answertype ipfs_answer) == "dag answer" then
+    Browsing
+    (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer))))
   else
-    Browsing (dag_json_to_dag_node (.value ipfs_answer))
+    Browsing [dag_node_to_file (dag_json_to_dag_node (.value ipfs_answer))]
 
-
-open : {name: String, multihash: String} -> Types.Msg
+open : Types.File -> Types.Msg
 open file =
-  if String.slice -5 -1 ((.name file) ++ "a") == ".ogg" then
-    Ipfs_cat {maddr = .multihash file, wanttype = "audio answer"}
-  else
-    Ipfs_dag_get (.multihash file)
+  case (.mediatype file) of
+    Folder ->
+      Ipfs_dag_get (.multihash file)
+    Link ->
+      Ipfs_dag_get (.multihash file)
+    Image ->
+      Ipfs_cat {maddr = .multihash file, wanttype = "image answer"}
+    Audio ->
+      Ipfs_cat {maddr = .multihash file, wanttype = "audio answer"}
+    Video ->
+      Ipfs_cat {maddr = .multihash file, wanttype = "video answer"}
+    Text ->
+      Ipfs_cat {maddr = .multihash file, wanttype = "text answer"}
+    _ ->
+      Ipfs_dag_get (.multihash file)
+  --
+  -- if String.right 4 (.name file) == ".ogg" then
+  --   Ipfs_cat {maddr = .multihash file, wanttype = "audio answer"}
+  -- else if String.right 4 (.name file) == ".jpg" then
+  --   Ipfs_cat {maddr = .multihash file, wanttype = "image answer"}
+  -- else
+  --   Ipfs_dag_get (.multihash file)
 
 -- play : Types.File -> Types.Action
 -- play file =

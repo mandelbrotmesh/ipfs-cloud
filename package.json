@@ -9,6 +9,7 @@
     "install-elm-deps": "pushd src/elm && elm-package install -y elm-lang/svg  & elm-package install -y gdotdesign/elm-ui && elm-package install -y pablohirafuji/elm-qrcode; popd;",
     "pack": "webpack",
     "serve": "http-server -c-1 -p 12345 build",
+    "edit": "cd src/elm/ && atom App.elm View.elm Layout.elm Stylesheet.elm Utils.elm State.elm Types.elm Ports.elm",
     "start": "yarn run pack && yarn run serve"
   },
   "devDependencies": {

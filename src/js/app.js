@@ -67,7 +67,7 @@ function start () {
     console.log('node starts');
     updateView('starting', node)
 
-    node = new Ipfs({repo: 'ipfs-' + 0.6732527245947162, //Math.random(),
+    node = new Ipfs({repo: 'ipfs-' + 0.6732527245947163, //Math.random(),
                     init: true,
                     EXPERIMENTAL: {
                       pubsub: true
@@ -240,7 +240,7 @@ function upload (files){
         if (fileSize < 50000000) {
           console.log('upload from buffer');
           return node.files.add([{
-            path: file.name,
+            path: "/media/" +file.name,
             content: new node.types.Buffer(buffer)
           }])
         } else {

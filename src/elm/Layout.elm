@@ -79,59 +79,44 @@ mainview model =
     [ width fill, height fill ]
     [ el None [ width fill, height (px 60) ] ( empty )
     , case model.action of
-        Browsing dag_node ->
-          browser dag_node
+        Browsing files ->
+          browser files
         Showing_img maddr->
           show_img maddr
         Playing_audio maddr ->
           audio_player maddr
         Playing_video maddr ->
           video_player maddr
+        Viewing_text maddr ->
+          text_viewer maddr
     ]
 
 
-browser : Types.Dag_node -> Element Styles variation Msg
-browser dag_node =
+browser : Types.Files -> Element Styles variation Msg
+browser files =
   el Browserstyle
     [ width fill, height fill]
     ( row None
         [ width fill, height fill, padding 20, spacing 10]
-        ( ( file_view(dag_node_to_file dag_node) )
-          ::( dag_links_file_view (.links dag_node))
+        (
+          List.map file_view files --(dag_node_to_file dag_node) )
+          -- ::( dag_links_file_view (.links dag_node))
         )
     )
 
-dag_node_to_file : Types.Dag_node -> Types.File
-dag_node_to_file dag_node =
-  { multihash = .multihash dag_node
-  , name = "idk.ogg"
-  , mime = "audio/ogg"
-  , pinnedby = [""]
-  , action = open
-    { name = "idk.ogg"
-    , multihash = (.multihash dag_node)
-    }
-  }
 
-dag_links_file_view : List Types.Dag_link -> List (Element Styles variation Msg)
-dag_links_file_view dag_links =
-  List.map file_view (List.map dag_link_to_file dag_links)
+
+-- dag_links_file_view : List Types.Dag_link -> List (Element Styles variation Msg)
+-- dag_links_file_view dag_links =
+  -- List.map file_view (List.map dag_link_to_file dag_links)
+
   -- List.concatMap (\f -> [file_view f])
   -- (List.map dag_link_to_file dag_links)
   --
 
 
-dag_link_to_file : Types.Dag_link -> Types.File
-dag_link_to_file dag_link =
-  { multihash = .multihash dag_link
-  , name = .name dag_link
-  , mime = "image/jpg"
-  , pinnedby = [""]
-  , action = open
-      { name = (.name dag_link)
-      , multihash = (.multihash dag_link)
-      }
-  }
+
+
   -- grid MyGridStyle [ --attributes
   --                 ]
   --   { columns = [ px 180, px 180, px 180, px 180 ]
@@ -179,7 +164,7 @@ show_img maddr =
     [ width fill]
     ( image None
         [ width (px 120), height (px 120) ]
-        { src = (maddrtourl maddr)
+        { src = maddr
         , caption = "image"
         }
     )
@@ -204,7 +189,7 @@ video_player maddr =
   el None
     [ width fill ]
     ( html ( Html.video
-        [ Hattr.src (maddrtourl maddr)
+        [ Hattr.src maddr
         , Hattr.controls True
         , Hattr.style
             [ ("width", "100vw")
@@ -212,6 +197,21 @@ video_player maddr =
             , ("backgroundColor", "rgba(3, 3, 3, 1)")
             , ("overflow-x", "hidden")
             ]
+        ]
+        [])
+    )
+
+text_viewer : Types.Maddr -> Element Styles variation Msg
+text_viewer maddr =
+  el None
+    [ width fill ]
+    ( html ( Html.embed
+        [ Hattr.src maddr --(maddrtourl maddr)
+        , Hattr.style
+          [ ("width", "100vw")
+          , ("overflow-x", "hidden")
+          , ("word-break", "break-all")
+          ]
         ]
         [])
     )
@@ -242,7 +242,7 @@ file_view file =
 
             ]
         , image None
-            [ width fill, height (px 100), onClick (.action file) ] --onClick (open (.maddr file))] --, onClick (Action_switch ( play file )) ]
+            [ width fill, height (px 100), onClick (open file) ] --onClick (open (.maddr file))] --, onClick (Action_switch ( play file )) ]
             { src = Utils.filesymbol file --(.multihash file) --(maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
             , caption = "play_file"
             }

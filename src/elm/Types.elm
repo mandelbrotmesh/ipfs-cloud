@@ -5,8 +5,15 @@ port module Types exposing (..)
 type alias Maddr
   = String
 
-type alias Mime
-  = String
+type Mediatype
+  = Folder
+  | Link
+  | Image
+  | Audio
+  | Video
+  | Text
+  | Other
+
 
 -- type Ipfs_action
 --   = Ipfs_get
@@ -22,9 +29,9 @@ type alias Ipfs_cmd =
 type alias File =
   { multihash : Maddr
   , name : String
-  , mime : Mime
+  , mediatype : Mediatype
   , pinnedby : List String
-  , action : Msg
+  -- , action : Msg
   }
 
 type Styles
@@ -41,16 +48,11 @@ type alias Files =
   List File
 
 type Action
-  = Browsing Dag_node --Files
+  = Browsing Files --Dag_node
   | Showing_img Maddr
   | Playing_audio Maddr
   | Playing_video Maddr
-
-type Media
-  = Image
-  | Audio
-  | Video
-  | Text
+  | Viewing_text Maddr
 
 type alias Model =
   { action : Action
