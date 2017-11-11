@@ -38,13 +38,13 @@ menu model =
                     }
                 )
             , row None
-                [ width fill ]
+                [ width fill, minWidth (px 20)]
                 [ Input.text Searchbarstyle
-                    [ width fill, padding 10 ]
+                    [ width fill, padding 10, minWidth (px 20)]
                     { onChange = Searchfield_msg
                     , value = ""
                     , label =  Input.placeholder
-                                { label = Input.labelLeft ( empty )
+                                { label = Input.hiddenLabel "" --Input.labelLeft ( empty )
                                 , text = "search"
                                 }
                     , options = []
@@ -205,15 +205,16 @@ text_viewer : Types.Maddr -> Element Styles variation Msg
 text_viewer maddr =
   el None
     [ width fill ]
-    ( html ( Html.embed
-        [ Hattr.src maddr --(maddrtourl maddr)
-        , Hattr.style
-          [ ("width", "100vw")
-          , ("overflow-x", "hidden")
-          , ("word-break", "break-all")
-          ]
-        ]
-        [])
+    ( text "stub"--html ( Html.object
+    --     [ Hattr.data maddr --(maddrtourl maddr)
+    --     -- , Hattr.type_ "text/plain"
+    --     , Hattr.style
+    --       [ ("width", "100vw")
+    --       , ("overflow-x", "hidden")
+    --       , ("word-break", "break-all")
+    --       ]
+    --     ]
+    --     [])
     )
 
 file_view : Types.File -> Element Styles vatiation Msg

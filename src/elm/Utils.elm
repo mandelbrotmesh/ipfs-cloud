@@ -27,7 +27,8 @@ get_mediatype name =
   else if (String.right 4 name) == ".txt" then
     Text
   else
-    Folder
+    Text
+
 -- filesymbol : Types.File -> String
 -- filesymbol file =
 --   if file.mime == "Unknown filetype" then
@@ -47,10 +48,24 @@ get_mediatype name =
 filesymbol : Types.File -> Maddr
 filesymbol file =
   case (.mediatype file) of
+    Folder ->
+      maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+    Link ->
+      maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+    Image ->
+      maddrtourl (.multihash file)
     Audio ->
       maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
+    Video ->
+      maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/notification/svg/production/ic_ondemand_video_48px.svg"
+    Text ->
+      maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_description_48px.svg"
     _ ->
       maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_folder_open_48px.svg"
+
+    -- maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_delete_48px.svg"
+    -- maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_query_builder_48px.svg"
+
 
   -- if String.right 4 (.mediatype file) == "audio" then
   --   maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/image/svg/production/ic_audiotrack_48px.svg"
