@@ -6,10 +6,6 @@ require('../index.html')
 const $dragoverPopup = document.querySelector('.dragover-popup')
 const $body = document.querySelector('body')
 
-// var protobuf = require('protobufjs')
-// var cryptojs = require('crypto-js')
-
-
 var Elm = require('../elm/App.elm')
 var mountNode = document.getElementById('main')
 var app = Elm.Main.embed(mountNode)
@@ -22,9 +18,6 @@ const Ipfs = require('ipfs')
 const Orbit = require('orbit-db')
 // const ipfsApi = require('ipfsApi')
 
-// const CID = require('cids')
-// const multicodec = require('multicodec')
-// const multibase = require('multibase')
 var protobuf = require('protobufjs')
 
 let node
@@ -33,6 +26,7 @@ let room
 
 let devices
 devices = {peerId: ["pins"]}
+let db
 
 const repo_seed =  0.6732527245947163
 
@@ -106,7 +100,7 @@ function start () {
     node.on('start', () => {
       node.id().then((id) => {
         const orbitdb = new Orbit(node)
-        const db = orbitdb.kvstore('pinlist')
+        db = orbitdb.kvstore('pinlist')
 
         peerId = id
         app.ports.ipfs_answer.send({answertype: "device_infos", value: JSON.stringify(peerId)})
@@ -455,7 +449,7 @@ $upbtn.addEventListener('change', onUpbtn)
 // app.ports.ipfs_answer.send(answer)
 
 //pin ls =>
-room.broadcast("pins")
+// room.broadcast("pins")
 //pin (msg)
 
 app.ports.ipfs_cmd.subscribe(
@@ -474,7 +468,29 @@ app.ports.ipfs_cmd.subscribe(
         break;
       case "pin":
         console.log("port pin" + msg);
+        var newval = db.get(msg['maddr'])
+        if (newval!=undefined){
+          newval.push(msg['wanttype']) //or msg["pinner"]
+          db.set(msg['maddr'], newval)
 
+        }
+        else {
+          db.put(msg['maddr'], [newval])
+        }
+        console.log(db.get(msg['maddr']));
+        break;
+      case "unpin":
+        console.log("port unpin" + msg);
+        var newval = db.get(msg['maddr'])
+        if (newval != undefined){
+          newval.splice(
+            newval.indexOf(msg['wanttype']),
+            1
+          )
+          db.set(msg['maddr'], newval)
+
+        }
+        console.log(db.get(msg['maddr']));
         break;
       case "pin_ls":
         console.log("port pin_ls" + msg);

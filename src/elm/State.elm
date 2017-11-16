@@ -4,7 +4,6 @@ import Types exposing (..)
 -- import MimeType exposing (..)
 import Ports exposing (..)
 import Utils exposing (..)
-import Autocomplete exposing (State)
 import List exposing (filter)
 import String exposing (contains, startsWith, toLower)
 
@@ -14,7 +13,7 @@ model =
                       -- , {maddr = "QmTca4A43f4kEvzTouvYTegtp6KobixRqweV12NrvwwtFP", mime = "video/mp4", ispinned = False}
                       -- , {maddr = "QmaMc3URC5Jqt3HrfP2beBkB56Y232YUqR3itguzup91je", mime = "audio/ogg", ispinned = False}
                       -- ]
-  , searchfield = ""
+  , search = General ""
   , files = []
   , this_device = { peerid = "empty peerid", pins = [], last_update = 0 }
   , devices = []
@@ -33,29 +32,13 @@ model =
 --       ipfs_cmd msg
 
 
-options : String -> List String
-options search =
-  let
-    query =
-      String.toLower search
-    fields =
-      [ "type:"
-      , "hash:"
-      , "peer:"
-      , "qr:"
-      , "path:"
-      , "history:"
-      ]
-  in
-    List.filter (String.contains query) fields
-
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Action_switch msg ->
       ( {model | action = msg}, Cmd.none)
-    Searchfield_msg msg ->
-      ( {model | searchfield = msg}, Cmd.none )
+    Search_msg msg ->
+      ( {model | search = General msg}, Cmd.none )
     Open_drawer msg ->
       ( {model | drawer_isopen = msg}, Cmd.none)
     Ipfs_cat msg ->
@@ -63,7 +46,7 @@ update msg model =
     Ipfs_add msg ->
       (model, ipfs_cmd {action= "add", maddr= msg, wanttype = Nothing})
     Ipfs_pin msg ->
-      (model, ipfs_cmd {action= "pin", maddr= msg, wanttype = Nothing})
+      (model, ipfs_cmd {action= "pin", maddr= msg, wanttype = Just model.this_device.peerid})
     Ipfs_pin_ls msg ->
       (model, ipfs_cmd {action= "pin_ls", maddr= msg, wanttype = Nothing})
     Ipfs_dag_get msg ->

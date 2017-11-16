@@ -41,7 +41,7 @@ searchfield model =
     [ width fill, minWidth (px 20)]
     [ Input.text Searchbarstyle
         [ width fill, padding 10, minWidth (px 20)]
-        { onChange = Searchfield_msg
+        { onChange = Search_msg
         , value = ""
         , label =  Input.placeholder
                     { label = Input.hiddenLabel "" --Input.labelLeft ( empty )
@@ -50,7 +50,16 @@ searchfield model =
         , options = []
         }
     , button Searchbarbuttonstyle
-        [ width (px 40), height (px 40), onClick (Types.Ipfs_dag_get model.searchfield) ]
+        [ width (px 40)
+        , height (px 40)
+        , onClick
+            (Types.Ipfs_dag_get
+              ( case model.search of
+                  General query -> query
+                  _ -> ""
+              )
+            )
+        ]--model.search) ]
         ( image None
             [ width (px 40), height (px 40) ]
             { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg")
@@ -75,27 +84,28 @@ menu model =
                     , caption = "open_drawer"
                     }
                 )
-            , row None
-                [ width fill, minWidth (px 20)]
-                [ Input.text Searchbarstyle
-                    [ width fill, padding 10, minWidth (px 20)]
-                    { onChange = Searchfield_msg
-                    , value = ""
-                    , label =  Input.placeholder
-                                { label = Input.hiddenLabel "" --Input.labelLeft ( empty )
-                                , text = "search"
-                                }
-                    , options = []
-                    }
-                , button Searchbarbuttonstyle
-                    [ width (px 40), height (px 40), onClick (Types.Ipfs_dag_get model.searchfield) ]
-                    ( image None
-                        [ width (px 40), height (px 40) ]
-                        { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg")
-                        , caption = "start_search"
-                        }
-                    )
-                ]
+            , searchfield model
+            -- , row None
+            --     [ width fill, minWidth (px 20)]
+            --     [ Input.text Searchbarstyle
+            --         [ width fill, padding 10, minWidth (px 20)]
+            --         { onChange = Searchfield_msg
+            --         , value = ""
+            --         , label =  Input.placeholder
+            --                     { label = Input.hiddenLabel "" --Input.labelLeft ( empty )
+            --                     , text = "search"
+            --                     }
+            --         , options = []
+            --         }
+            --     , button Searchbarbuttonstyle
+            --         [ width (px 40), height (px 40), onClick (Types.Ipfs_dag_get model.searchfield) ]
+            --         ( image None
+            --             [ width (px 40), height (px 40) ]
+            --             { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg")
+            --             , caption = "start_search"
+            --             }
+            --         )
+            --     ]
             , button Menubuttonstyle
                 [ width (px 40), height (px 40) ]
                 ( image None

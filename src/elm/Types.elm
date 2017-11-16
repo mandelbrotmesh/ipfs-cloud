@@ -1,6 +1,5 @@
 port module Types exposing (..)
 import Time exposing (..)
-import Autocomplete
 --import MimeType exposing (..)
 
 type alias Maddr
@@ -56,12 +55,13 @@ type Styles
   | Filestyle
 
 type Search
-  = Nonething String
+  = General String
   | By_hash String
-  | By_type String String
+  | By_type String
+  | By_peer String
   | Qr
   | Path (List String)
-
+  | History
 
 
 type alias Files =
@@ -77,7 +77,7 @@ type Action
 
 type alias Model =
   { action : Action
-  , searchfield : String
+  , search : Search
   , files : Files
   , this_device : Device
   , devices : List Device
@@ -114,7 +114,7 @@ type alias Url = String
   -- , val : String }
 
 type Msg
-  = Searchfield_msg String
+  = Search_msg String
   | Action_switch Action
   | Open_drawer Bool
   | Ipfs_cat {maddr : Maddr, wanttype: String}
