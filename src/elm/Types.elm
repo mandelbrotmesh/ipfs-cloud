@@ -1,5 +1,6 @@
 port module Types exposing (..)
-
+import Time exposing (..)
+import Autocomplete
 --import MimeType exposing (..)
 
 type alias Maddr
@@ -34,8 +35,19 @@ type alias File =
   -- , action : Msg
   }
 
+type alias Device =
+  { peerid : String
+  , pins : List String
+  , last_update : Time
+  }
+
+
+
 type Styles
   = None
+  | Overlay
+  | Drawerstyle
+  | Drawerbuttonstyle
   | Menustyle
   | Menubuttonstyle
   | Searchbarstyle
@@ -43,12 +55,21 @@ type Styles
   | Browserstyle
   | Filestyle
 
+type Search
+  = Nonething String
+  | By_hash String
+  | By_type String String
+  | Qr
+  | Path (List String)
+
+
 
 type alias Files =
   List File
 
 type Action
-  = Browsing Files --Dag_node
+  = Account
+  | Browsing Files --Dag_node
   | Showing_img Maddr
   | Playing_audio Maddr
   | Playing_video Maddr
@@ -58,6 +79,10 @@ type alias Model =
   { action : Action
   , searchfield : String
   , files : Files
+  , this_device : Device
+  , devices : List Device
+  , uploads : Maddr
+  , drawer_isopen : Bool
   }
 
 type alias Ipld_node = String
@@ -91,11 +116,15 @@ type alias Url = String
 type Msg
   = Searchfield_msg String
   | Action_switch Action
+  | Open_drawer Bool
   | Ipfs_cat {maddr : Maddr, wanttype: String}
   | Ipfs_add Maddr
   | Ipfs_pin Maddr
   | Ipfs_pin_ls Maddr
   | Ipfs_dag_get Maddr
+  | Ipfs_device_infos
+  | Uploads String
+  | Device_infos String
   -- | Ipfs_cmd Ipfs_action
   | Ipfs_msg Ipfs_answer
   -- | Ipfs_asset_msg String

@@ -24,6 +24,16 @@ stylesheet : StyleSheet Styles variation
 stylesheet =
   Style.styleSheet
     [ Style.style None []
+    , Style.style Drawerstyle
+        [ Border.right 4
+
+        ]
+    , Style.style Overlay
+        [ Color.background (Color.rgba 0 0 0 0.5) ]
+    , Style.style Drawerbuttonstyle
+        [ Border.bottom 4
+        , Color.border (Color.rgba 0 0 0 0.5)
+        ]
     , Style.style Menustyle
         [ --Color.text darkGrey
           Color.background (Color.rgba 240 40 40 1)

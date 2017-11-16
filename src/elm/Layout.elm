@@ -8,19 +8,57 @@ import Element.Input as Input
 import Element.Events exposing (..)
 import Dict exposing (Dict, get)
 import Json.Decode exposing (..)
-import Html
+import Html exposing (program)
 import Html.Attributes as Hattr
+import QRCode
 -- import Html.Events exposing (..)
+import State
 
 import Utils exposing(..)
 
+
+
 appshell : Types.Model -> Element Styles variation Msg
 appshell model =
-  column None
-    [ width fill, height fill ]
-    [ menu model
-    , mainview model
+  row None
+    [ width fill, height fill]
+    [ column None
+        [ width fill, height fill ]
+        [ menu model
+        , el None [ width fill, height (px 60) ] ( empty )
+        , row None
+            [ width fill, height fill ]
+            [ drawer model
+            , mainview model
+            ]
+        ]
+
     ]
+
+searchfield : Types.Model -> Element Styles variation Msg
+searchfield model =
+  row None
+    [ width fill, minWidth (px 20)]
+    [ Input.text Searchbarstyle
+        [ width fill, padding 10, minWidth (px 20)]
+        { onChange = Searchfield_msg
+        , value = ""
+        , label =  Input.placeholder
+                    { label = Input.hiddenLabel "" --Input.labelLeft ( empty )
+                    , text = "search"
+                    }
+        , options = []
+        }
+    , button Searchbarbuttonstyle
+        [ width (px 40), height (px 40), onClick (Types.Ipfs_dag_get model.searchfield) ]
+        ( image None
+            [ width (px 40), height (px 40) ]
+            { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_search_48px.svg")
+            , caption = "start_search"
+            }
+        )
+    ]
+
 
 menu : Types.Model -> Element Styles variation Msg
 menu model =
@@ -32,7 +70,7 @@ menu model =
             [ button Menubuttonstyle
                 [ width (px 40), height (px 40)]
                 ( image None
-                    [ width (px 40), height (px 40) ]
+                    [ width (px 40), height (px 40) , onClick (Open_drawer (not model.drawer_isopen) )]
                     { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_menu_48px.svg")
                     , caption = "open_drawer"
                     }
@@ -65,6 +103,7 @@ menu model =
                     { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_file_upload_48px.svg")
                     , caption = "upload_file"
                     }
+                -- , text "bla"
                 )
 
             ]
@@ -72,13 +111,53 @@ menu model =
         )
     )
 
+drawer : Types.Model -> Element Styles variation Msg
+drawer model =
+  el Drawerstyle
+    [ width (px 200), height fill,
+      case model.drawer_isopen of
+        False -> hidden
+        _ -> height fill
+
+    ]
+    ( column None [ height fill, width fill, xScrollbar]
+        [ text "hello"
+        , button Drawerbuttonstyle
+            [ width fill, height (px 40), padding 4, onClick (Action_switch Account) ]
+            ( row None
+                [ width fill, height fill]
+                [ image None
+                    [ width (px 40), height fill ]
+                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg")
+                    , caption = "account_settings"
+                    }
+                , text "account settings"
+                ]
+            )
+        , button Drawerbuttonstyle
+            [ width fill, height (px 40), padding 4, onClick (Action_switch Account) ]
+            ( row None
+                [ width fill, height fill]
+                [ image None
+                    [ width (px 40), height fill ]
+                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg")
+                    , caption = "account_settings"
+                    }
+                , text "node settings"
+                ]
+            )
+        ]
+    )
+
+
 
 mainview : Types.Model -> Element Styles variation Msg
 mainview model =
   column None
     [ width fill, height fill ]
-    [ el None [ width fill, height (px 60) ] ( empty )
-    , case model.action of
+    [ case model.action of
+        Account ->
+          account model
         Browsing files ->
           browser files
         Showing_img maddr->
@@ -91,12 +170,34 @@ mainview model =
           text_viewer maddr
     ]
 
+qrCodeView : String -> Html.Html msg
+qrCodeView message =
+    QRCode.encode message
+        |> Result.map QRCode.toSvg
+        |> Result.withDefault
+            (Html.text "Error while encoding to QRCode.")
+
+account : Types.Model -> Element Styles variation Msg
+account model =
+  el None
+  [ width fill, height fill ]
+  ( column None
+      [ width fill, height fill ]
+      [ text <| "device info " ++ model.this_device.peerid ++ "peerid: " ++ "peerid"
+      , text <| "devices []"
+      , text <| "add device "
+      , html (qrCodeView "test")
+
+      ]
+  )
+
+
 
 browser : Types.Files -> Element Styles variation Msg
 browser files =
   el Browserstyle
     [ width fill, height fill]
-    ( row None
+    ( wrappedRow None
         [ width fill, height fill, padding 20, spacing 10]
         (
           List.map file_view files --(dag_node_to_file dag_node) )
@@ -177,7 +278,7 @@ audio_player maddr =
         [ Hattr.src maddr --(maddrtourl maddr)
         , Hattr.controls True
         , Hattr.style
-          [ ("width", "100vw")
+          [ ("width", "100%")
           , ("overflow-x", "hidden")
           ]
         ]
@@ -192,7 +293,7 @@ video_player maddr =
         [ Hattr.src maddr
         , Hattr.controls True
         , Hattr.style
-            [ ("width", "100vw")
+            [ ("width", "100%")
             , ("height", "calc(100vmin - 60px)")
             , ("backgroundColor", "rgba(3, 3, 3, 1)")
             , ("overflow-x", "hidden")
@@ -217,6 +318,7 @@ text_viewer maddr =
     --     [])
     )
 
+
 file_view : Types.File -> Element Styles vatiation Msg
 file_view file =
   el Filestyle
@@ -236,7 +338,7 @@ file_view file =
                 , caption = "pin_content"
                 }
             ,  image None
-                [ width (px 20), height (px 20) ]
+                [ width (px 20), height (px 20) ] --, onClick  ]
                 { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/navigation/svg/production/ic_more_vert_48px.svg")
                 , caption = "more_options"
                 }

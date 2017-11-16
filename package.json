@@ -33,6 +33,7 @@
     "mmmagic": "^0.4.5",
     "multibase": "^0.3.4",
     "multicodec": "^0.2.5",
+    "orbit-db": "^0.17.3",
     "protobufjs": "^6.8.0",
     "stream-buffers": "^3.0.1"
   }

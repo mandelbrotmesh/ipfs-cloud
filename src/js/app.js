@@ -17,10 +17,11 @@ var app = Elm.Main.embed(mountNode)
 
 
 const streamBuffers = require('stream-buffers')
+// const Room = require('ipfs-pubsub-room')
 const Ipfs = require('ipfs')
+const Orbit = require('orbit-db')
 // const ipfsApi = require('ipfsApi')
 
-const Room = require('ipfs-pubsub-room')
 // const CID = require('cids')
 // const multicodec = require('multicodec')
 // const multibase = require('multibase')
@@ -28,7 +29,14 @@ var protobuf = require('protobufjs')
 
 let node
 let peerId
+let room
 
+let devices
+devices = {peerId: ["pins"]}
+
+const repo_seed =  0.6732527245947163
+
+let last_change = 0
 
 // var account =
 //   {'time': 0,
@@ -59,15 +67,25 @@ let peerId
 //
 // }
 
+// function add_dev (password, devicename, peerid) {
+//   if (account['devices'].indexOf(devicename) != -1)
+//     { console.log('device:' + devicename + 'already exists')
+//       return }
+//   account['devices'][account['devices'].length + 1] = {devicename: peerid}
+//
+//   //send encrypted account file to peerId
+//   //prompt password on peer -> decrypt account file
+//   //return new account file(encrypted)
+// }
 
-
+// room = Room(node, "ipfs-cloud-room" + repo_seed)
 
 function start () {
   if (!node) {
     console.log('node starts');
     updateView('starting', node)
 
-    node = new Ipfs({repo: 'ipfs-' + 0.6732527245947163, //Math.random(),
+    node = new Ipfs({repo: 'ipfs-cloud' + repo_seed, //Math.random(),
                     init: true,
                     EXPERIMENTAL: {
                       pubsub: true
@@ -87,14 +105,20 @@ function start () {
 
     node.on('start', () => {
       node.id().then((id) => {
+        const orbitdb = new Orbit(node)
+        const db = orbitdb.kvstore('pinlist')
+
         peerId = id
+        app.ports.ipfs_answer.send({answertype: "device_infos", value: JSON.stringify(peerId)})
         updateView('ready', node)
-        // const room = Room(node, "ipfs-cloud")
+
         // setInterval(refreshPeerList, 1000)
       })
     })
   }
 }
+
+
 
 function createFileBlob (data, multihash, wanttype) {
   const file = new window.Blob(data, {type: 'application/octet-binary'})
@@ -231,7 +255,7 @@ function upload (files){
   for (let i = 0; i < files.length; i++) {
     filesArray.push(files[i])
   }
-
+  var filecount = filesArray.length
   filesArray.map((file) => {
     readFileContents(file)
       .then((buffer) => {
@@ -240,7 +264,7 @@ function upload (files){
         if (fileSize < 50000000) {
           console.log('upload from buffer');
           return node.files.add([{
-            path: "/media/" +file.name,
+            path: "/media/" + file.name,
             content: new node.types.Buffer(buffer)
           }])
         } else {
@@ -274,7 +298,7 @@ function upload (files){
             }
 
             stream.write({
-              path: ('myapp/' + file.name),
+              path: ('/media/' + file.name),
               content: myReadableStreamBuffer
             })
 
@@ -290,6 +314,8 @@ function upload (files){
             // progress.
             let progressbar = setInterval(() => {
               console.log('progress: ', progress, '/', fileSize, ' = ', Math.floor((progress / fileSize) * 100), '%')
+              app.ports.ipfs_answer.send({answertype: "upload progress", value: ( (progress/fileSize) * 100 ) })
+
             }, 5000)
 
 
@@ -420,12 +446,17 @@ const startApplication = () => {
 }
 
 
+
 startApplication()
 
 var $upbtn = document.getElementById('upbtn')
 $upbtn.addEventListener('change', onUpbtn)
 
 // app.ports.ipfs_answer.send(answer)
+
+//pin ls =>
+room.broadcast("pins")
+//pin (msg)
 
 app.ports.ipfs_cmd.subscribe(
   function handle_action(msg) {
@@ -443,15 +474,11 @@ app.ports.ipfs_cmd.subscribe(
         break;
       case "pin":
         console.log("port pin" + msg);
+
         break;
       case "pin_ls":
         console.log("port pin_ls" + msg);
         break;
-      // case "cid_to_codec":
-      //   console.log("port cid_to_codec" + msg);
-      //   var cid = new CID(1, 'dag-pb', multihash)
-      //   app.ports.ipfs_asset.send(cid.codec)
-      //   break;
       case "dag_get":
         console.log("port dag_get " + msg['maddr']);
         node.dag.get(msg['maddr'], function (err, val) {
@@ -474,6 +501,10 @@ app.ports.ipfs_cmd.subscribe(
           var answer = JSON.stringify(val['value'])
         app.ports.ipfs_answer.send({answertype: "dag answer", value: answer})
         })
+        break;
+      case "device_infos":
+        console.log("port device_infos ");
+        app.ports.ipfs_answer.send({answertype: "device_infos", value: devices })
         break;
       // default:
 

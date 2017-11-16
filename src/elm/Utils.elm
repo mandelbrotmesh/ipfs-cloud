@@ -98,21 +98,25 @@ dag_link_to_file dag_link =
   , pinnedby = [""]
   }
 
-decide : Types.Ipfs_answer -> Types.Action
+decide : Types.Ipfs_answer -> Types.Msg
 decide ipfs_answer =
   if (.answertype ipfs_answer) == "image answer" then
-    Showing_img (.value ipfs_answer)
+    Action_switch (Showing_img (.value ipfs_answer))
   else if (.answertype ipfs_answer) == "audio answer" then
-    Playing_audio (.value ipfs_answer)
+    Action_switch (Playing_audio (.value ipfs_answer))
   else if (.answertype ipfs_answer) == "video answer" then
-    Playing_video (.value ipfs_answer)
+    Action_switch (Playing_video (.value ipfs_answer))
   else if (.answertype ipfs_answer) == "text answer" then
-    Viewing_text (.value ipfs_answer)
+    Action_switch (Viewing_text (.value ipfs_answer))
   else if (.answertype ipfs_answer) == "dag answer" then
-    Browsing
-    (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer))))
+    Action_switch (Browsing
+    (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer)))) )
+  else if (.answertype ipfs_answer) == "Upload_progress" then
+    Uploads (.value ipfs_answer)
+  else if (.answertype ipfs_answer) == "device_infos" then
+    Device_infos (.value ipfs_answer)
   else
-    Browsing [dag_node_to_file (dag_json_to_dag_node (.value ipfs_answer))]
+    Action_switch (Browsing [dag_node_to_file (dag_json_to_dag_node (.value ipfs_answer))] )
 
 open : Types.File -> Types.Msg
 open file =
