@@ -156,6 +156,18 @@ drawer model =
                 , text "node settings"
                 ]
             )
+        , button Drawerbuttonstyle
+            [ width fill, height (px 40), padding 4 ]
+            ( row None
+                [ width fill, height fill]
+                [ image None
+                    [ width (px 40), height fill ]
+                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg")
+                    , caption = "account_settings"
+                    }
+                , text "history"
+                ]
+            )
         ]
     )
 
@@ -193,7 +205,8 @@ account model =
   [ width fill, height fill ]
   ( column None
       [ width fill, height fill ]
-      [ text <| "device info " ++ model.this_device.peerid ++ "peerid: " ++ "peerid"
+      [ text <| "device name"
+      , text <| "device id: " ++ model.this_device.peerid
       , text <| "devices []"
       , text <| "add device "
       , html (qrCodeView "test")

@@ -17,7 +17,7 @@ model =
   , files = []
   , this_device = { peerid = "empty peerid", pins = [], last_update = 0 }
   , devices = []
-  , uploads = ""
+  , uploads = []
   , drawer_isopen = False
   }
 
@@ -53,11 +53,11 @@ update msg model =
       (model, ipfs_cmd {action= "dag_get", maddr= msg, wanttype = Nothing})
     Ipfs_device_infos ->
       (model, ipfs_cmd {action= "device_infos", maddr="", wanttype = Nothing})
-    Uploads msg ->
+    Upload_info msg ->
       ( {model| uploads = msg}, Cmd.none )
     Device_infos msg ->
       ( { model | this_device =
-            { peerid = msg
+            { peerid = Utils.dec_dev_infos msg
             , pins = model.this_device.pins
             , last_update = model.this_device.last_update
             }

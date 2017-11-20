@@ -29,6 +29,12 @@ get_mediatype name =
   else
     Text
 
+dec_dev_infos : String -> String
+dec_dev_infos msg =
+  case (decodeString (field "id" string) msg) of
+    Ok val -> val
+    Err val -> "err"
+
 -- filesymbol : Types.File -> String
 -- filesymbol file =
 --   if file.mime == "Unknown filetype" then
@@ -112,7 +118,7 @@ decide ipfs_answer =
     Action_switch (Browsing
     (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer)))) )
   else if (.answertype ipfs_answer) == "Upload_progress" then
-    Uploads (.value ipfs_answer)
+    Upload_info [] --(.value ipfs_answer)
   else if (.answertype ipfs_answer) == "device_infos" then
     Device_infos (.value ipfs_answer)
   else

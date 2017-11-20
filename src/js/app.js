@@ -11,14 +11,11 @@ var mountNode = document.getElementById('main')
 var app = Elm.Main.embed(mountNode)
 
 
-
+const jsqr = require('jsqr')
 const streamBuffers = require('stream-buffers')
 // const Room = require('ipfs-pubsub-room')
 const Ipfs = require('ipfs')
 const Orbit = require('orbit-db')
-// const ipfsApi = require('ipfsApi')
-
-var protobuf = require('protobufjs')
 
 let node
 let peerId
@@ -31,6 +28,26 @@ let db
 const repo_seed =  0.6732527245947163
 
 let last_change = 0
+
+let first_start
+first_start = true
+
+
+// multisig for adding devices:
+//   -every device is a key
+//   -user has a password(1key)
+//   -maybe other keys (third party, backup, etc)
+//
+// adding -> 2 keys:
+//   -> temporary add device window
+//
+//   qr-code gives hash of device key
+//   + enter password on (to be added) device
+//   device is added (db-entry via other device)
+
+//or like in private ipfs: qr code transmits swarm key
+
+// -- feature : text clipboard
 
 // var account =
 //   {'time': 0,

@@ -29,6 +29,7 @@
     "ipfs-pubsub-room": "^0.3.0",
     "ipfs-unixfs": "^0.1.13",
     "ipld-dag-pb": "^0.11.2",
+    "jsqr": "^0.2.2",
     "material-design-icons": "^3.0.1",
     "mmmagic": "^0.4.5",
     "multibase": "^0.3.4",

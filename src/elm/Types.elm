@@ -81,7 +81,7 @@ type alias Model =
   , files : Files
   , this_device : Device
   , devices : List Device
-  , uploads : Maddr
+  , uploads : List Upload
   , drawer_isopen : Bool
   }
 
@@ -96,6 +96,15 @@ type alias Dag_link =
   , size : Int
   }
 
+type alias Connection
+  = List String
+
+type alias Upload =
+  { dag_info : Dag_node
+  , uploaded_portion : Int
+  , peer : String
+  }
+
 type alias Dag_node =
   { data : List Int
   , links : List Dag_link
@@ -107,6 +116,16 @@ type alias Ipfs_answer =
   { answertype : String
   , value : String
   }
+
+-- type Page
+--   = Acc_settings
+--   | Node_settings
+--   | History
+--   | Browser
+--   | Image
+--   | Audio
+--   | Video
+--   | Text
 
 type alias Url = String
   --| Err
@@ -123,7 +142,7 @@ type Msg
   | Ipfs_pin_ls Maddr
   | Ipfs_dag_get Maddr
   | Ipfs_device_infos
-  | Uploads String
+  | Upload_info (List Upload)
   | Device_infos String
   -- | Ipfs_cmd Ipfs_action
   | Ipfs_msg Ipfs_answer
