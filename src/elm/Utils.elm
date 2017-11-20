@@ -5,6 +5,8 @@ import Types exposing (..)
 import Json.Decode exposing (..)
 import Dict exposing (Dict, get)
 import List exposing (map3)
+import Navigation exposing (..)
+import Erl exposing (..)
 
 maddrtourl : Maddr -> String
 maddrtourl maddr =
@@ -104,25 +106,64 @@ dag_link_to_file dag_link =
   , pinnedby = [""]
   }
 
+-- get_page : Location -> Page
+-- get_page loc =
+--   case (.hash loc) of
+--     "#acc_settings" -> Acc_settings
+--     "#node_settings" -> Node_settings
+--     "#history" -> History
+--     "#browser" -> Browser [] --<| .hash loc
+--     "#imager" -> Imager <| .pathname loc
+--     "#video_p" -> Video_p <| .pathname loc
+--     "#audio_p" -> Audio_p <| .pathname loc
+--     "#text_p" -> Text_p <| .pathname loc
+--     _ -> Browser []
+
+action : String -> String -> Location
+action intent hash =
+  { href = ""
+  , host = ""
+  , hostname = ""
+  , protocol = ""
+  , origin = ""
+  , port_ = ""
+  , pathname = intent
+  , search = ""
+  , hash = hash
+  , username = ""
+  , password = ""
+  }
+
 decide : Types.Ipfs_answer -> Types.Msg
 decide ipfs_answer =
   if (.answertype ipfs_answer) == "image answer" then
-    Action_switch (Showing_img (.value ipfs_answer))
+    Action_switch (Showing_img (.value ipfs_answer) (.hash ipfs_answer))
+    -- Url_change (action "imager/" <| .value ipfs_answer)
   else if (.answertype ipfs_answer) == "audio answer" then
-    Action_switch (Playing_audio (.value ipfs_answer))
+    Action_switch (Playing_audio (.value ipfs_answer) (.hash ipfs_answer))
+    -- Url_change (action "audio_p/" <| .value ipfs_answer)
   else if (.answertype ipfs_answer) == "video answer" then
-    Action_switch (Playing_video (.value ipfs_answer))
+    Action_switch (Playing_video (.value ipfs_answer) (.hash ipfs_answer))
+    -- Url_change (action "video_p/" <| .value ipfs_answer)
   else if (.answertype ipfs_answer) == "text answer" then
-    Action_switch (Viewing_text (.value ipfs_answer))
+    Action_switch (Viewing_text (.value ipfs_answer) (.hash ipfs_answer))
+    -- Url_change (action "text_p/" <| .value ipfs_answer)
   else if (.answertype ipfs_answer) == "dag answer" then
-    Action_switch (Browsing
-    (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer)))) )
+    -- Url_change (action "#browser/" <| .value ipfs_answer)
+    Action_switch <|
+      Browsing
+      (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer))))
+      (.hash ipfs_answer)
   else if (.answertype ipfs_answer) == "Upload_progress" then
     Upload_info [] --(.value ipfs_answer)
   else if (.answertype ipfs_answer) == "device_infos" then
     Device_infos (.value ipfs_answer)
   else
-    Action_switch (Browsing [dag_node_to_file (dag_json_to_dag_node (.value ipfs_answer))] )
+    Action_switch <|
+      Browsing
+      (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer))))
+      (.hash ipfs_answer)
+    -- Action_switch (Browsing [dag_node_to_file (dag_json_to_dag_node (.value ipfs_answer))] )
 
 open : Types.File -> Types.Msg
 open file =
@@ -141,7 +182,7 @@ open file =
       Ipfs_cat {maddr = .multihash file, wanttype = "text answer"}
     _ ->
       Ipfs_dag_get (.multihash file)
-  --
+
   -- if String.right 4 (.name file) == ".ogg" then
   --   Ipfs_cat {maddr = .multihash file, wanttype = "audio answer"}
   -- else if String.right 4 (.name file) == ".jpg" then

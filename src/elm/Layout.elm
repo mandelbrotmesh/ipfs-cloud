@@ -133,7 +133,7 @@ drawer model =
     ( column None [ height fill, width fill, xScrollbar]
         [ text "hello"
         , button Drawerbuttonstyle
-            [ width fill, height (px 40), padding 4, onClick (Action_switch Account) ]
+            [ width fill, height (px 40), padding 4, onClick <| Action_switch Acc_settings ]
             ( row None
                 [ width fill, height fill]
                 [ image None
@@ -145,7 +145,7 @@ drawer model =
                 ]
             )
         , button Drawerbuttonstyle
-            [ width fill, height (px 40), padding 4, onClick (Action_switch Account) ]
+            [ width fill, height (px 40), padding 4, onClick <| Action_switch Acc_settings ]
             ( row None
                 [ width fill, height fill]
                 [ image None
@@ -171,24 +171,37 @@ drawer model =
         ]
     )
 
-
+-- type Page
+--   = Acc_settings
+--   | Node_settings
+--   | History
+--   | Browser Files
+--   | Imager Maddr
+--   | Audio_p Maddr
+--   | Video_p Maddr
+--   | Text_p Maddr
+--
 
 mainview : Types.Model -> Element Styles variation Msg
 mainview model =
   column None
     [ width fill, height fill ]
     [ case model.action of
-        Account ->
+        Acc_settings ->
           account model
-        Browsing files ->
+        Node_settings ->
+          account model
+        History ->
+          account model
+        Browsing files hash ->
           browser files
-        Showing_img maddr->
+        Showing_img maddr hash ->
           show_img maddr
-        Playing_audio maddr ->
+        Playing_audio maddr hash ->
           audio_player maddr
-        Playing_video maddr ->
+        Playing_video maddr hash ->
           video_player maddr
-        Viewing_text maddr ->
+        Viewing_text maddr hash ->
           text_viewer maddr
     ]
 

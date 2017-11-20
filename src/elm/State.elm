@@ -6,13 +6,11 @@ import Ports exposing (..)
 import Utils exposing (..)
 import List exposing (filter)
 import String exposing (contains, startsWith, toLower)
+import Navigation exposing (Location, modifyUrl)
 
-model : Types.Model
-model =
-  { action = Showing_img "QmUDhFjiVkHaQUvsViPm6ueM4WuV9ZeRm9JVnGD13ec9zS" --[] --[ {maddr = "Qma7cGNxVCVHwcjzYzDgR34hPxeSg1FsFHUNk1ytz8XASY", mime = "inode/directory", ispinned = False}
-                      -- , {maddr = "QmTca4A43f4kEvzTouvYTegtp6KobixRqweV12NrvwwtFP", mime = "video/mp4", ispinned = False}
-                      -- , {maddr = "QmaMc3URC5Jqt3HrfP2beBkB56Y232YUqR3itguzup91je", mime = "audio/ogg", ispinned = False}
-                      -- ]
+init : Types.Model
+init =
+  { action = Showing_img "" "QmUDhFjiVkHaQUvsViPm6ueM4WuV9ZeRm9JVnGD13ec9zS"
   , search = General ""
   , files = []
   , this_device = { peerid = "empty peerid", pins = [], last_update = 0 }
@@ -20,6 +18,11 @@ model =
   , uploads = []
   , drawer_isopen = False
   }
+
+--  "QmUDhFjiVkHaQUvsViPm6ueM4WuV9ZeRm9JVnGD13ec9zS"
+--  {maddr = "Qma7cGNxVCVHwcjzYzDgR34hPxeSg1FsFHUNk1ytz8XASY", mime = "inode/directory", ispinned = False}
+--  {maddr = "QmTca4A43f4kEvzTouvYTegtp6KobixRqweV12NrvwwtFP", mime = "video/mp4", ispinned = False}
+--  {maddr = "QmaMc3URC5Jqt3HrfP2beBkB56Y232YUqR3itguzup91je", mime = "audio/ogg", ispinned = False}
 
 -- ipfs_cmd_send : Ipfs_cmd -> Cmd msg
 -- ipfs_cmd_send msg =
@@ -31,12 +34,29 @@ model =
 --     Ipfs_pin_ls msg ->
 --       ipfs_cmd msg
 
+--url be like https://origin:port/action/ipfs/Qm...
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Action_switch msg ->
-      ( {model | action = msg}, Cmd.none)
+    Action_switch val ->
+      ( {model | action = val}
+      , modifyUrl
+          ( case val of
+              Acc_settings -> "acc_settings"
+              Node_settings -> "node_settings"
+              History -> "history"
+              Browsing fil hash -> hash
+              Showing_img val hash -> hash
+              Playing_audio val hash -> hash
+              Playing_video val hash -> hash
+              Viewing_text val hash -> hash
+          )
+      )
+    -- Url_change location ->
+      -- ({ model | page = (get_page location) }, modifyUrl (location.pathname ++ location.hash))-- Cmd.none)
+    -- Browsing stuff maddr ->
+      -- ({model | files = stuff, page = Browser stuff}, Cmd.none) --modifyUrl ("#browser/ipfs/" ++ maddr) )--Cmd.none) --stuff <| Utils.action "#browsing" ""}, Cmd.none)
     Search_msg msg ->
       ( {model | search = General msg}, Cmd.none )
     Open_drawer msg ->
@@ -68,7 +88,8 @@ update msg model =
     -- Ipfs_cmd msg ->
     --   (model, ipfs_cmd_send msg )
     Ipfs_msg msg ->
-      ( { model | action = Browsing [] }, Cmd.none)
+      -- ( { model | page = Browser [] }, Cmd.none)
+      ( { model | action = Browsing [] "" }, Cmd.none)
 
 -- Browsing (Utils.dag_json_to_dag_node msg)
 

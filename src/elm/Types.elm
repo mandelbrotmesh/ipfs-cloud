@@ -1,5 +1,6 @@
 port module Types exposing (..)
 import Time exposing (..)
+import Navigation exposing (..)
 --import MimeType exposing (..)
 
 type alias Maddr
@@ -61,22 +62,30 @@ type Search
   | By_peer String
   | Qr
   | Path (List String)
-  | History
+  | Inhistory
 
 
 type alias Files =
   List File
 
+-- type Action
+--   = Account
+
+
 type Action
-  = Account
-  | Browsing Files --Dag_node
-  | Showing_img Maddr
-  | Playing_audio Maddr
-  | Playing_video Maddr
-  | Viewing_text Maddr
+  = Acc_settings
+  | Node_settings
+  | History
+  | Browsing Files Maddr--Dag_node
+  | Showing_img Url Maddr
+  | Playing_audio Url Maddr
+  | Playing_video Url Maddr
+  | Viewing_text Url Maddr
+
 
 type alias Model =
-  { action : Action
+  { --action : Action
+   action : Action
   , search : Search
   , files : Files
   , this_device : Device
@@ -115,17 +124,10 @@ type alias Dag_node =
 type alias Ipfs_answer =
   { answertype : String
   , value : String
+  , hash : String
   }
 
--- type Page
---   = Acc_settings
---   | Node_settings
---   | History
---   | Browser
---   | Image
---   | Audio
---   | Video
---   | Text
+
 
 type alias Url = String
   --| Err
@@ -135,6 +137,8 @@ type alias Url = String
 type Msg
   = Search_msg String
   | Action_switch Action
+  -- | Url_change Navigation.Location
+  -- | Browsing Files Maddr
   | Open_drawer Bool
   | Ipfs_cat {maddr : Maddr, wanttype: String}
   | Ipfs_add Maddr

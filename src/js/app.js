@@ -120,7 +120,7 @@ function start () {
         db = orbitdb.kvstore('pinlist')
 
         peerId = id
-        app.ports.ipfs_answer.send({answertype: "device_infos", value: JSON.stringify(peerId)})
+        app.ports.ipfs_answer.send({answertype: "device_infos", value: JSON.stringify(peerId), hash: ""})
         updateView('ready', node)
 
         // setInterval(refreshPeerList, 1000)
@@ -136,7 +136,7 @@ function createFileBlob (data, multihash, wanttype) {
   const fileUrl = window.URL.createObjectURL(file)
   console.log(fileUrl);
   console.log(wanttype);
-  app.ports.ipfs_answer.send({answertype: wanttype, value: fileUrl})
+  app.ports.ipfs_answer.send({answertype: wanttype, value: fileUrl, hash: multihash})
   var mime = "";
   const getMimetype = (signature) => {
         switch (signature) {
@@ -532,12 +532,12 @@ app.ports.ipfs_cmd.subscribe(
           // var cid = new CID(val['value']['multihash'])
           // console.log(cid.codec);
           var answer = JSON.stringify(val['value'])
-        app.ports.ipfs_answer.send({answertype: "dag answer", value: answer})
+        app.ports.ipfs_answer.send({answertype: "dag answer url", value: answer, hash: msg['maddr']})
         })
         break;
       case "device_infos":
         console.log("port device_infos ");
-        app.ports.ipfs_answer.send({answertype: "device_infos", value: devices })
+        app.ports.ipfs_answer.send({answertype: "device_infos", value: devices, hash: "" })
         break;
       // default:
 
