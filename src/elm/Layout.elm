@@ -56,7 +56,7 @@ searchfield model =
             (Types.Ipfs_dag_get
               ( case model.search of
                   General query -> query
-                  _ -> ""
+                  _ -> "QmbNLBWmoWHf6X2ryRTFUN2EYEAwna1se3dXav6mAcXRxC"
               )
             )
         ]--model.search) ]
@@ -121,6 +121,21 @@ menu model =
         )
     )
 
+drawer_button : (String, String, String, Types.Action) -> Element Styles variation Msg
+drawer_button (button_text, caption, symbolurl, action) =
+  button Drawerbuttonstyle
+    [ width fill, height (px 40), padding 4, onClick <| Action_switch action ]
+    ( row None
+        [ width fill, height fill]
+        [ image None
+            [ width (px 40), height fill ]
+            { src = symbolurl
+            , caption = caption
+            }
+        , text button_text
+        ]
+    )
+
 drawer : Types.Model -> Element Styles variation Msg
 drawer model =
   el Drawerstyle
@@ -132,42 +147,12 @@ drawer model =
     ]
     ( column None [ height fill, width fill, xScrollbar]
         [ text "hello"
-        , button Drawerbuttonstyle
-            [ width fill, height (px 40), padding 4, onClick <| Action_switch Acc_settings ]
-            ( row None
-                [ width fill, height fill]
-                [ image None
-                    [ width (px 40), height fill ]
-                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg")
-                    , caption = "account_settings"
-                    }
-                , text "account settings"
-                ]
-            )
-        , button Drawerbuttonstyle
-            [ width fill, height (px 40), padding 4, onClick <| Action_switch Acc_settings ]
-            ( row None
-                [ width fill, height fill]
-                [ image None
-                    [ width (px 40), height fill ]
-                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg")
-                    , caption = "account_settings"
-                    }
-                , text "node settings"
-                ]
-            )
-        , button Drawerbuttonstyle
-            [ width fill, height (px 40), padding 4 ]
-            ( row None
-                [ width fill, height fill]
-                [ image None
-                    [ width (px 40), height fill ]
-                    { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg")
-                    , caption = "account_settings"
-                    }
-                , text "history"
-                ]
-            )
+        , drawer_button ("home", "home_button", (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"), Home )
+        , drawer_button ("uploads", "uploads", (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"), Uploads )
+        , drawer_button ("devices", "devices", (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"), Devices )
+        , drawer_button ("account settings", "account_settings", (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"), Acc_settings)
+        , drawer_button ("node settings", "node_settings", (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"), Node_settings )
+        , drawer_button ("history", "history", (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/action/svg/production/ic_account_circle_48px.svg"), History)
         ]
     )
 
@@ -187,6 +172,13 @@ mainview model =
   column None
     [ width fill, height fill ]
     [ case model.action of
+        Home ->
+          home model
+        Uploads ->
+          home model
+        Devices ->
+          home model
+
         Acc_settings ->
           account model
         Node_settings ->
@@ -211,6 +203,14 @@ qrCodeView message =
         |> Result.map QRCode.toSvg
         |> Result.withDefault
             (Html.text "Error while encoding to QRCode.")
+
+home : Types.Model -> Element Styles variation Msg
+home model =
+  text "home"
+  -- uploads
+  -- devices
+  -- history?
+  -- files
 
 account : Types.Model -> Element Styles variation Msg
 account model =

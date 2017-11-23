@@ -72,9 +72,13 @@ type alias Files =
 --   = Account
 
 
+
 type Action
-  = Acc_settings
+  = Home
+  | Acc_settings
   | Node_settings
+  | Uploads
+  | Devices
   | History
   | Browsing Files Maddr--Dag_node
   | Showing_img Url Maddr
@@ -137,6 +141,7 @@ type alias Url = String
 type Msg
   = Search_msg String
   | Action_switch Action
+  | Ext_url Navigation.Location
   -- | Url_change Navigation.Location
   -- | Browsing Files Maddr
   | Open_drawer Bool

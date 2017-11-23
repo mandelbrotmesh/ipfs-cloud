@@ -13,8 +13,8 @@ main : Program Never Types.Model Types.Msg
 main =
   -- Html.program
   Navigation.program
-  (\_ ->  Upload_info [])-- Url_change
-  { init = (\_ -> (init, Cmd.none)) --javascript handles init async; Ports.ipfs_cmd {action = "Pin_ls", maddr = ""} )
+  (\url ->  Ext_url url)-- Url_change
+  { init = (\url -> (init url, Cmd.none)) --javascript handles init async; Ports.ipfs_cmd {action = "Pin_ls", maddr = ""} )
   , view = view
   , subscriptions = subscriptions
     -- \model -> Sub.none

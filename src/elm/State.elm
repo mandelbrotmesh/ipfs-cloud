@@ -8,8 +8,8 @@ import List exposing (filter)
 import String exposing (contains, startsWith, toLower)
 import Navigation exposing (Location, modifyUrl)
 
-init : Types.Model
-init =
+init : Location -> Types.Model
+init url =
   { action = Showing_img "" "QmUDhFjiVkHaQUvsViPm6ueM4WuV9ZeRm9JVnGD13ec9zS"
   , search = General ""
   , files = []
@@ -43,16 +43,21 @@ update msg model =
       ( {model | action = val}
       , modifyUrl
           ( case val of
-              Acc_settings -> "acc_settings"
-              Node_settings -> "node_settings"
-              History -> "history"
-              Browsing fil hash -> hash
-              Showing_img val hash -> hash
-              Playing_audio val hash -> hash
-              Playing_video val hash -> hash
-              Viewing_text val hash -> hash
+              Home -> "?#home"
+              Uploads -> "?#uploads"
+              Devices -> "?#devices"
+              Acc_settings -> "?#acc_settings"
+              Node_settings -> "?#node_settings"
+              History -> "?#history"
+              Browsing fil hash -> "?#" ++ hash
+              Showing_img val hash -> "?#" ++ hash
+              Playing_audio val hash -> "?#" ++ hash
+              Playing_video val hash -> "?#" ++ hash
+              Viewing_text val hash -> "?#" ++ hash
           )
       )
+    Ext_url url ->
+      ( model, Cmd.none)
     -- Url_change location ->
       -- ({ model | page = (get_page location) }, modifyUrl (location.pathname ++ location.hash))-- Cmd.none)
     -- Browsing stuff maddr ->

@@ -26,7 +26,7 @@ stylesheet =
     [ Style.style None []
     , Style.style Drawerstyle
         [ Border.right 4
-
+        , Color.border (Color.rgba 0 0 0 0.5)
         ]
     , Style.style Overlay
         [ Color.background (Color.rgba 0 0 0 0.5) ]
