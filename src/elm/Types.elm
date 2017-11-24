@@ -80,7 +80,7 @@ type Action
   | Uploads
   | Devices
   | History
-  | Browsing Files Maddr--Dag_node
+  | Browsing Dag_node --Files Maddr--Dag_node
   | Showing_img Url Maddr
   | Playing_audio Url Maddr
   | Playing_video Url Maddr
@@ -131,7 +131,14 @@ type alias Ipfs_answer =
   , hash : String
   }
 
-
+type Ipfs_cmd_msg
+  = Ipfs_cat {maddr : Maddr, wanttype: String}
+  | Ipfs_add Maddr
+  | Ipfs_pin Maddr
+  | Ipfs_pin_ls Maddr
+  | Ipfs_dag_get Maddr
+  | Ipfs_device_infos
+  | Ipfs_ans Ipfs_answer
 
 type alias Url = String
   --| Err
@@ -145,16 +152,11 @@ type Msg
   -- | Url_change Navigation.Location
   -- | Browsing Files Maddr
   | Open_drawer Bool
-  | Ipfs_cat {maddr : Maddr, wanttype: String}
-  | Ipfs_add Maddr
-  | Ipfs_pin Maddr
-  | Ipfs_pin_ls Maddr
-  | Ipfs_dag_get Maddr
-  | Ipfs_device_infos
+  | Ipfs_msg Ipfs_cmd_msg
   | Upload_info (List Upload)
   | Device_infos String
   -- | Ipfs_cmd Ipfs_action
-  | Ipfs_msg Ipfs_answer
+
   -- | Ipfs_asset_msg String
 
   -- | Ipfs_add Bool

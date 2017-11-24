@@ -151,37 +151,37 @@ decide ipfs_answer =
   else if (.answertype ipfs_answer) == "dag answer" then
     -- Url_change (action "#browser/" <| .value ipfs_answer)
     Action_switch <|
-      Browsing
-      (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer))))
-      (.hash ipfs_answer)
+      Browsing (dag_json_to_dag_node (.value ipfs_answer))
+      -- (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer))))
+      -- (.hash ipfs_answer)
   else if (.answertype ipfs_answer) == "Upload_progress" then
     Upload_info [] --(.value ipfs_answer)
   else if (.answertype ipfs_answer) == "device_infos" then
     Device_infos (.value ipfs_answer)
   else
     Action_switch <|
-      Browsing
-      (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer))))
-      (.hash ipfs_answer)
+      Browsing (dag_json_to_dag_node (.value ipfs_answer))
+      -- (List.map dag_link_to_file (.links (dag_json_to_dag_node (.value ipfs_answer))))
+      -- (.hash ipfs_answer)
     -- Action_switch (Browsing [dag_node_to_file (dag_json_to_dag_node (.value ipfs_answer))] )
 
 open : Types.File -> Types.Msg
 open file =
   case (.mediatype file) of
     Folder ->
-      Ipfs_dag_get (.multihash file)
+      Ipfs_msg <| Ipfs_dag_get (.multihash file)
     Link ->
-      Ipfs_dag_get (.multihash file)
+      Ipfs_msg <| Ipfs_dag_get (.multihash file)
     Image ->
-      Ipfs_cat {maddr = .multihash file, wanttype = "image answer"}
+      Ipfs_msg <| Ipfs_cat {maddr = .multihash file, wanttype = "image answer"}
     Audio ->
-      Ipfs_cat {maddr = .multihash file, wanttype = "audio answer"}
+      Ipfs_msg <| Ipfs_cat {maddr = .multihash file, wanttype = "audio answer"}
     Video ->
-      Ipfs_cat {maddr = .multihash file, wanttype = "video answer"}
+      Ipfs_msg <| Ipfs_cat {maddr = .multihash file, wanttype = "video answer"}
     Text ->
-      Ipfs_cat {maddr = .multihash file, wanttype = "text answer"}
+      Ipfs_msg <| Ipfs_cat {maddr = .multihash file, wanttype = "text answer"}
     _ ->
-      Ipfs_dag_get (.multihash file)
+      Ipfs_msg <| Ipfs_dag_get (.multihash file)
 
   -- if String.right 4 (.name file) == ".ogg" then
   --   Ipfs_cat {maddr = .multihash file, wanttype = "audio answer"}

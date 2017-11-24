@@ -52,7 +52,8 @@ searchfield model =
     , button Searchbarbuttonstyle
         [ width (px 40)
         , height (px 40)
-        , onClick
+        , onClick <|
+            Ipfs_msg
             (Types.Ipfs_dag_get
               ( case model.search of
                   General query -> query
@@ -109,7 +110,7 @@ menu model =
             , button Menubuttonstyle
                 [ width (px 40), height (px 40) ]
                 ( image None
-                    [ width (px 40), height (px 40), onClick (Ipfs_add "bla") ]
+                    [ width (px 40), height (px 40), onClick <| Ipfs_msg (Ipfs_add "bla") ]
                     { src = (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/file/svg/production/ic_file_upload_48px.svg")
                     , caption = "upload_file"
                     }
@@ -178,15 +179,14 @@ mainview model =
           home model
         Devices ->
           home model
-
         Acc_settings ->
           account model
         Node_settings ->
           account model
         History ->
-          account model
-        Browsing files hash ->
-          browser files
+          history model
+        Browsing dag_node -> --files hash ->
+          browser dag_node --files
         Showing_img maddr hash ->
           show_img maddr
         Playing_audio maddr hash ->
@@ -212,6 +212,15 @@ home model =
   -- history?
   -- files
 
+history : Types.Model -> Element Styles variation Msg
+history model =
+  button None
+    [ width (px 40)
+    , height (px 40)
+    , onClick <| Ipfs_msg <| Types.Ipfs_pin_ls ""
+    ]
+    ( text "pin_ls")
+
 account : Types.Model -> Element Styles variation Msg
 account model =
   el None
@@ -229,14 +238,17 @@ account model =
 
 
 
-browser : Types.Files -> Element Styles variation Msg
-browser files =
+browser : Types.Dag_node -> Element Styles variation Msg
+browser dag_node =
   el Browserstyle
     [ width fill, height fill]
     ( wrappedRow None
         [ width fill, height fill, padding 20, spacing 10]
         (
-          List.map file_view files --(dag_node_to_file dag_node) )
+        List.map file_view --files --(dag_node_to_file dag_node) )
+          <| List.map (\a -> (a, .multihash dag_node))
+              ( List.map Utils.dag_link_to_file (.links dag_node))
+
           -- ::( dag_links_file_view (.links dag_node))
         )
     )
@@ -355,8 +367,8 @@ text_viewer maddr =
     )
 
 
-file_view : Types.File -> Element Styles vatiation Msg
-file_view file =
+file_view : (Types.File, Types.Maddr) -> Element Styles vatiation Msg
+file_view (file, dir) =
   el Filestyle
     [ width (px 120), height (px 180), padding 5 ]
     ( column None
@@ -364,7 +376,7 @@ file_view file =
         [ row None
             [ width fill, alignRight]
             [ image None
-                [ width (px 20), height (px 20), onClick (Ipfs_pin (.multihash file) ) ]--file.maddr) ]
+                [ width (px 20), height (px 20), onClick <| Ipfs_msg (Ipfs_pin dir) ]--(.multihash file) ) ]--file.maddr) ]
                 { src = --(maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_24px.svg")
                     if file.pinnedby == [""] then
                       (maddrtourl "QmcGneXUwhLv49P23kZPQ5LCEi15nQis4PZDrd1jZf75cc/toggle/svg/production/ic_star_border_24px.svg")

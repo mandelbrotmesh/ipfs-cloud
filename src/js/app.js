@@ -23,7 +23,8 @@ let room
 
 let devices
 devices = {peerId: ["pins"]}
-let db
+// let db
+let ev
 
 const repo_seed =  0.6732527245947163
 
@@ -117,8 +118,8 @@ function start () {
     node.on('start', () => {
       node.id().then((id) => {
         const orbitdb = new Orbit(node)
-        db = orbitdb.kvstore('pinlist')
-
+        // db = orbitdb.kvstore('pinlist')
+        ev = orbitdb.eventlog('pinlist')
         peerId = id
         app.ports.ipfs_answer.send({answertype: "device_infos", value: JSON.stringify(peerId), hash: ""})
         updateView('ready', node)
@@ -339,6 +340,7 @@ function upload (files){
         if (files && files.length) {
           var a = files[0].hash
           console.log('added ' + a)
+          ev.add({pinned: true, peer: peerId, multihash:a})
 
           // node.pubsub.publish("ipfs-cloud", new Buffer('added' + a), (err) => {
           //   if (err){
@@ -485,32 +487,45 @@ app.ports.ipfs_cmd.subscribe(
         break;
       case "pin":
         console.log("port pin" + msg);
-        var newval = db.get(msg['maddr'])
-        if (newval!=undefined){
-          newval.push(msg['wanttype']) //or msg["pinner"]
-          db.set(msg['maddr'], newval)
+        // var newval = db.get(msg['maddr'])
+        ev.add({pinned: true, peer: msg['wanttype'], multihash:msg['maddr']})
 
-        }
-        else {
-          db.put(msg['maddr'], [newval])
-        }
-        console.log(db.get(msg['maddr']));
+        // if (newval!=undefined){
+        //   newval.push(msg['wanttype']) //or msg["pinner"]
+        //   db.set(msg['maddr'], newval)
+        //
+        // }
+        // else {
+        //   db.put(msg['maddr'], [newval])
+        // }
+        // console.log(db.get(msg['maddr']));
         break;
       case "unpin":
         console.log("port unpin" + msg);
-        var newval = db.get(msg['maddr'])
-        if (newval != undefined){
-          newval.splice(
-            newval.indexOf(msg['wanttype']),
-            1
-          )
-          db.set(msg['maddr'], newval)
+        ev.add({pinned: false, peer: msg['wanttype'], multihash:msg['maddr']})
 
-        }
-        console.log(db.get(msg['maddr']));
+        // var newval = db.get(msg['maddr'])
+        // if (newval != undefined){
+        //   newval.splice(
+        //     newval.indexOf(msg['wanttype']),
+        //     1
+        //   )
+        //   db.set(msg['maddr'], newval)
+        //
+        // }
+        // console.log(db.get(msg['maddr']));
         break;
       case "pin_ls":
         console.log("port pin_ls" + msg);
+        // ev.events.on('ready', () => {
+        //   var items = ev.iterator().collect()
+        //   items.forEach((e) => console.log(e.name))
+        // })
+        const evts = ev.iterator({ limit: 100 })
+          .collect()
+          .reverse()
+          .map((e) => console.log(e.payload.value)) //e.payload.value)
+
         break;
       case "dag_get":
         console.log("port dag_get " + msg['maddr']);

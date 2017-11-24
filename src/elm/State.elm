@@ -6,7 +6,7 @@ import Ports exposing (..)
 import Utils exposing (..)
 import List exposing (filter)
 import String exposing (contains, startsWith, toLower)
-import Navigation exposing (Location, modifyUrl)
+import Navigation exposing (Location, modifyUrl, newUrl)
 
 init : Location -> Types.Model
 init url =
@@ -36,36 +36,10 @@ init url =
 
 --url be like https://origin:port/action/ipfs/Qm...
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
+
+ipfs_interop : Types.Ipfs_cmd_msg -> Types.Model -> (Model, Cmd Msg)
+ipfs_interop msg model=
   case msg of
-    Action_switch val ->
-      ( {model | action = val}
-      , modifyUrl
-          ( case val of
-              Home -> "?#home"
-              Uploads -> "?#uploads"
-              Devices -> "?#devices"
-              Acc_settings -> "?#acc_settings"
-              Node_settings -> "?#node_settings"
-              History -> "?#history"
-              Browsing fil hash -> "?#" ++ hash
-              Showing_img val hash -> "?#" ++ hash
-              Playing_audio val hash -> "?#" ++ hash
-              Playing_video val hash -> "?#" ++ hash
-              Viewing_text val hash -> "?#" ++ hash
-          )
-      )
-    Ext_url url ->
-      ( model, Cmd.none)
-    -- Url_change location ->
-      -- ({ model | page = (get_page location) }, modifyUrl (location.pathname ++ location.hash))-- Cmd.none)
-    -- Browsing stuff maddr ->
-      -- ({model | files = stuff, page = Browser stuff}, Cmd.none) --modifyUrl ("#browser/ipfs/" ++ maddr) )--Cmd.none) --stuff <| Utils.action "#browsing" ""}, Cmd.none)
-    Search_msg msg ->
-      ( {model | search = General msg}, Cmd.none )
-    Open_drawer msg ->
-      ( {model | drawer_isopen = msg}, Cmd.none)
     Ipfs_cat msg ->
       (model, ipfs_cmd {action = "cat", maddr = .maddr msg, wanttype = Just (.wanttype msg)} )
     Ipfs_add msg ->
@@ -78,6 +52,44 @@ update msg model =
       (model, ipfs_cmd {action= "dag_get", maddr= msg, wanttype = Nothing})
     Ipfs_device_infos ->
       (model, ipfs_cmd {action= "device_infos", maddr="", wanttype = Nothing})
+    Ipfs_ans msg ->
+      -- ( { model | page = Browser [] }, Cmd.none)
+      ( { model | action = Browsing (Utils.dag_json_to_dag_node <| .value msg) }, Cmd.none)
+
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
+  case msg of
+    Action_switch val ->
+      ( {model | action = val}
+      , newUrl
+          ( case val of
+              Home -> "?home"
+              Uploads -> "?uploads"
+              Devices -> "?devices"
+              Acc_settings -> "?acc_settings"
+              Node_settings -> "?node_settings"
+              History -> "?history"
+              Browsing dag_node -> "?" ++ (.multihash) dag_node--fil hash -> "?" ++ hash
+              Showing_img val hash -> "?" ++ hash
+              Playing_audio val hash -> "?" ++ hash
+              Playing_video val hash -> "?" ++ hash
+              Viewing_text val hash -> "?" ++ hash
+          )
+      )
+    Ext_url url ->
+      ( model, Cmd.none)
+    Ipfs_msg imsg->
+      ipfs_interop imsg model
+
+    -- Url_change location ->
+      -- ({ model | page = (get_page location) }, modifyUrl (location.pathname ++ location.hash))-- Cmd.none)
+    -- Browsing stuff maddr ->
+      -- ({model | files = stuff, page = Browser stuff}, Cmd.none) --modifyUrl ("#browser/ipfs/" ++ maddr) )--Cmd.none) --stuff <| Utils.action "#browsing" ""}, Cmd.none)
+    Search_msg msg ->
+      ( {model | search = General msg}, Cmd.none )
+    Open_drawer msg ->
+      ( {model | drawer_isopen = msg}, Cmd.none)
+
     Upload_info msg ->
       ( {model| uploads = msg}, Cmd.none )
     Device_infos msg ->
@@ -90,11 +102,7 @@ update msg model =
       , Cmd.none
       )
 
-    -- Ipfs_cmd msg ->
-    --   (model, ipfs_cmd_send msg )
-    Ipfs_msg msg ->
-      -- ( { model | page = Browser [] }, Cmd.none)
-      ( { model | action = Browsing [] "" }, Cmd.none)
+
 
 -- Browsing (Utils.dag_json_to_dag_node msg)
 
